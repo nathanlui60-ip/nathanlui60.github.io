@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetProbe // 網路探測器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07080c;--panel:#0c0e14;--card:#10131b;--elev:#161a25;
+  --bdr:#1a1f2e;--txt:#c8ceda;--txt2:#5c6478;--muted:#2e3446;
+  --acc:#00ffc8;--accd:#00ffc830;--grn:#00e676;--cyn:#00e5ff;
+  --red:#ff3860;--wrn:#ffb830;--inf:#3890ff;--pur:#b388ff;
+  --mono:'JetBrains Mono','Share Tech Mono',monospace;
+  --disp:'Share Tech Mono',monospace;
+  --body:'Noto Sans TC','JetBrains Mono',sans-serif;
+  --scan:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,200,.015) 2px,rgba(0,255,200,.015) 4px);
+}
+html{font-size:14px;scrollbar-width:thin;scrollbar-color:var(--accd) var(--bg)}
+body{font-family:var(--body);color:var(--txt);background:var(--bg);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;background:var(--scan);opacity:.5}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;background:radial-gradient(ellipse at 50% 0%,rgba(0,255,200,.04) 0%,transparent 60%)}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--accd);border-radius:3px}
+a{color:var(--acc);text-decoration:none}
+
+.app-wrapper{max-width:1320px;margin:0 auto;padding:0 20px}
+
+/* AD */
+.ad-banner{background:var(--panel);border:1px dashed var(--bdr);border-radius:4px;min-height:90px;display:flex;align-items:center;justify-content:center;margin:12px 0;overflow:hidden}
+.ad-banner::before{content:'AD UNIT';font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:4px}
+
+/* HEADER */
+header{padding:22px 0 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{width:40px;height:40px;border:2px solid var(--acc);border-radius:8px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accd),transparent);box-shadow:0 0 18px var(--accd)}
+.logo-icon svg{width:20px;height:20px;stroke:var(--acc)}
+.logo h1{font-family:var(--disp);font-size:1.3rem;color:var(--acc);letter-spacing:3px;line-height:1}
+.logo span{font-size:.68rem;color:var(--txt2);letter-spacing:1px;font-family:var(--mono)}
+.hdr-status{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.72rem;color:var(--txt2)}
+.dot-on{width:7px;height:7px;border-radius:50%;background:var(--grn);box-shadow:0 0 8px var(--grn);animation:pulse 2s infinite}
+
+/* SEARCH HERO */
+.search-hero{padding:24px 0 8px}
+.search-box{background:var(--panel);border:1px solid var(--bdr);border-radius:12px;padding:22px 26px;position:relative;box-shadow:0 4px 40px rgba(0,0,0,.4)}
+.search-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--acc),transparent)}
+.sb-label{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sb-label .p{width:6px;height:6px;border-radius:50%;background:var(--acc);animation:pulse 1.5s infinite}
+.sb-row{display:flex;gap:10px}
+.sb-input{flex:1;background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:15px 18px;font-family:var(--mono);font-size:.95rem;color:var(--txt);outline:none;transition:border .3s,box-shadow .3s}
+.sb-input:focus{border-color:var(--acc);box-shadow:0 0 20px var(--accd)}
+.sb-input::placeholder{color:var(--muted);font-style:italic}
+.btn-go{padding:15px 30px;font-family:var(--mono);font-size:.82rem;font-weight:600;background:linear-gradient(135deg,var(--acc),#00b89c);color:var(--bg);border:none;border-radius:8px;cursor:pointer;letter-spacing:2px;transition:all .3s;white-space:nowrap}
+.btn-go:hover{box-shadow:0 0 28px var(--accd);transform:translateY(-1px)}
+.btn-go:active{transform:translateY(0)}
+.btn-go:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-go .sp{display:none;width:16px;height:16px;border:2px solid var(--bg);border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite}
+.btn-go.ld .bt{display:none}.btn-go.ld .sp{display:inline-block}
+.qk-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
+.qk-label{font-family:var(--mono);font-size:.62rem;color:var(--muted);letter-spacing:1px}
+.qk{padding:5px 13px;font-family:var(--mono);font-size:.68rem;background:var(--card);border:1px solid var(--bdr);border-radius:4px;color:var(--txt2);cursor:pointer;transition:all .2s}
+.qk:hover{border-color:var(--accd);color:var(--acc)}
+
+/* TAB BAR */
+.tab-bar{display:flex;gap:2px;background:var(--panel);border-radius:6px;padding:3px;border:1px solid var(--bdr);margin:16px 0}
+.tab-btn{flex:1;padding:10px 8px;font-family:var(--mono);font-size:.7rem;background:transparent;border:none;color:var(--txt2);cursor:pointer;border-radius:4px;transition:all .25s;letter-spacing:.5px;text-align:center;position:relative}
+.tab-btn:hover{color:var(--txt);background:var(--card)}
+.tab-btn.on{color:var(--acc);background:var(--card);box-shadow:0 0 12px var(--accd),inset 0 1px 0 var(--accd)}
+.tab-btn.on::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--acc);border-radius:1px;box-shadow:0 0 6px var(--acc)}
+.ti{display:block;font-size:.95rem;margin-bottom:1px}
+
+/* ═══ RESULTS AREA (directly below search) ═══ */
+.results-zone{display:none;margin-bottom:20px}
+.results-zone.vis{display:block;animation:fadeUp .4s ease}
+
+/* CARDS */
+.card{background:var(--panel);border:1px solid var(--bdr);border-radius:8px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--acc);box-shadow:0 0 8px var(--accd)}
+.card-hd{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--bdr)}
+.card-hd svg{width:18px;height:18px;stroke:var(--acc);flex-shrink:0}
+.card-hd span{font-family:var(--mono);font-size:.82rem;color:var(--acc);letter-spacing:1px}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.info-item{padding:10px 14px;background:var(--bg);border-radius:6px;border:1px solid var(--bdr)}
+.info-label{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:3px}
+.info-val{font-family:var(--mono);font-size:.82rem;color:var(--txt);word-break:break-all}
+.info-val.hl{color:var(--acc)}
+
+/* MAP */
+#mapbox{height:300px;border-radius:8px;overflow:hidden;border:1px solid var(--bdr);margin-top:14px}
+#mapbox .leaflet-tile-pane{filter:brightness(.6) invert(1) contrast(1.2) hue-rotate(200deg) saturate(.3) brightness(.7)}
+
+/* TABLES */
+.dt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.76rem}
+.dt th{text-align:left;padding:9px 12px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--bdr);font-size:.62rem;letter-spacing:2px;text-transform:uppercase}
+.dt td{padding:9px 12px;border-bottom:1px solid var(--bdr);color:var(--txt);vertical-align:middle}
+.dt tr{transition:background .2s}.dt tr:hover{background:var(--elev)}
+.dt tr.to td{color:var(--muted);font-style:italic}
+.lat-bg{width:100%;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;min-width:70px}
+.lat-bar{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.23,1,.32,1);position:relative}
+.lat-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15));border-radius:4px}
+.ll{background:linear-gradient(90deg,var(--grn),var(--cyn))}.lm{background:linear-gradient(90deg,var(--wrn),#ff9100)}.lh{background:linear-gradient(90deg,var(--red),#ff1744)}
+.hop-n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--accd);color:var(--acc);font-weight:600;font-size:.68rem}
+.hop-end .hop-n{animation:pulse 1.5s infinite;background:var(--acc);color:var(--bg)}
+
+/* DNS */
+.dns-grp{margin-bottom:14px}
+.dns-badge{display:inline-block;padding:3px 10px;font-family:var(--mono);font-size:.68rem;font-weight:600;border-radius:4px;margin-bottom:6px;letter-spacing:1px}
+.dns-A{background:#00e67620;color:var(--grn);border:1px solid #00e67640}
+.dns-AAAA{background:#00e5ff20;color:var(--cyn);border:1px solid #00e5ff40}
+.dns-CNAME{background:#ffb83020;color:var(--wrn);border:1px solid #ffb83040}
+.dns-MX{background:#b388ff20;color:var(--pur);border:1px solid #b388ff40}
+.dns-NS{background:#3890ff20;color:var(--inf);border:1px solid #3890ff40}
+.dns-TXT{background:#5c647820;color:var(--txt2);border:1px solid #5c647840}
+.dns-SOA{background:#ff386020;color:var(--red);border:1px solid #ff386040}
+.dns-row{padding:7px 12px;background:var(--bg);border-radius:4px;font-family:var(--mono);font-size:.76rem;color:var(--txt);margin-bottom:3px;border:1px solid var(--bdr);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dns-row .ttl{color:var(--muted);font-size:.62rem;margin-left:auto}
+
+/* AS PATH */
+.as-vis{display:flex;align-items:center;gap:0;flex-wrap:wrap;padding:14px 0;margin-bottom:14px}
+.as-nd{padding:10px 14px;background:var(--card);border:1px solid var(--accd);border-radius:8px;font-family:var(--mono);font-size:.76rem;color:var(--acc);text-align:center;min-width:85px;transition:all .3s;cursor:default}
+.as-nd:hover{border-color:var(--acc);box-shadow:0 0 14px var(--accd);transform:translateY(-2px)}
+.as-nd .an{font-weight:600;font-size:.82rem;display:block}
+.as-nd .nm{font-size:.58rem;color:var(--txt2);display:block;margin-top:2px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.as-nd.ao{border-color:var(--grn);background:rgba(0,230,118,.08)}.as-nd.ao .an{color:var(--grn)}
+.as-nd.ad{border-color:var(--inf);background:rgba(56,144,255,.08)}.as-nd.ad .an{color:var(--inf)}
+.as-arr{font-family:var(--mono);color:var(--muted);padding:0 5px;font-size:1rem}
+
+/* LOG */
+.tlog{background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:10px 14px;font-family:var(--mono);font-size:.7rem;color:var(--txt2);max-height:150px;overflow-y:auto;margin-top:14px;line-height:1.8}
+.tlog .ll2{opacity:0;animation:typeIn .3s forwards}
+.ll2 .ts{color:var(--muted)}.ll2 .ok{color:var(--grn)}.ll2 .wr{color:var(--wrn)}.ll2 .er{color:var(--red)}.ll2 .nf{color:var(--inf)}
+
+/* BOTTOM GRID (sidebar + info) */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.sidebar-card{background:var(--panel);border:1px solid var(--bdr);border-radius:8px;padding:14px}
+.sidebar-card h3{font-family:var(--mono);font-size:.72rem;color:var(--txt2);letter-spacing:2px;margin-bottom:10px;text-transform:uppercase}
+.ad-section{margin-bottom:20px}
+.ad-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.ad-rect{min-height:250px}
+.hist{list-style:none;display:flex;flex-direction:column;gap:5px}
+.hi{padding:7px 10px;background:var(--bg);border-radius:4px;font-family:var(--mono);font-size:.72rem;color:var(--txt2);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px;border:1px solid transparent}
+.hi:hover{border-color:var(--accd);color:var(--acc)}
+.hi .ht{font-size:.58rem;padding:2px 5px;border-radius:3px;background:var(--accd);color:var(--acc)}
+.no-h{font-family:var(--mono);font-size:.68rem;color:var(--muted);text-align:center;padding:16px 0}
+
+/* FOOTER */
+footer{border-top:1px solid var(--bdr);padding:18px 0;text-align:center;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+
+/* ANIMS */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes typeIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+
+/* RESPONSIVE */
+@media(max-width:900px){.bottom-grid{grid-template-columns:1fr}.ad-row{grid-template-columns:1fr}.info-grid{grid-template-columns:1fr 1fr}.as-vis{justify-content:center}}
+@media(max-width:540px){.sb-row{flex-direction:column}.info-grid{grid-template-columns:1fr}.tab-btn{padding:8px 4px;font-size:.6rem;letter-spacing:0}header{padding:14px 0}.search-box{padding:16px 14px}.as-nd{min-width:65px;padding:8px 8px}}
+</style>
+</head>
+<body>
+<div class="app-wrapper">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z"/></svg></div>
+      <div><h1>NETPROBE</h1><span>網路探測器 // Network Utility v3.0</span></div>
+    </div>
+    <div class="hdr-status"><span class="dot-on"></span><span>ONLINE</span><span style="color:var(--muted)">|</span><span id="clock"></span></div>
+  </header>
+
+  <!-- ═══ SEARCH BAR (TOP LEVEL) ═══ -->
+  <div class="search-hero">
+    <div class="search-box">
+      <div class="sb-label"><span class="p"></span> 全域搜尋 // UNIVERSAL PROBE</div>
+      <div class="sb-row">
+        <input type="text" class="sb-input" id="q" placeholder="輸入 IP、網域或主機名稱 // Enter IP, domain, or hostname" spellcheck="false" autocomplete="off">
+        <button class="btn-go" id="gobtn" onclick="exec()"><span class="bt">EXECUTE</span><span class="sp"></span></button>
+      </div>
+      <div class="qk-row">
+        <span class="qk-label">快捷 //</span>
+        <button class="qk" onclick="qset('8.8.8.8')">Google DNS</button>
+        <button class="qk" onclick="qset('1.1.1.1')">Cloudflare</button>
+        <button class="qk" onclick="qset('208.67.222.222')">OpenDNS</button>
+        <button class="qk" onclick="qset('github.com')">github.com</button>
+        <button class="qk" onclick="qset('cloudflare.com')">cloudflare.com</button>
+        <button class="qk" onclick="myip()">我的 IP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TOOL TABS ═══ -->
+  <div class="tab-bar">
+    <button class="tab-btn on" data-t="ip" onclick="stab('ip')"><span class="ti">&#9678;</span>IP 查詢</button>
+    <button class="tab-btn" data-t="dns" onclick="stab('dns')"><span class="ti">&#9883;</span>DNS 紀錄</button>
+    <button class="tab-btn" data-t="trace" onclick="stab('trace')"><span class="ti">&#9733;</span>路由追蹤</button>
+    <button class="tab-btn" data-t="aspath" onclick="stab('aspath')"><span class="ti">&#9741;</span>AS 路徑</button>
+  </div>
+
+  <!-- ═══ RESULTS (directly below search + tabs) ═══ -->
+
+  <!-- IP -->
+  <div class="results-zone" id="r-ip">
+    <div class="card">
+      <div class="card-hd"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>地理位置資訊 / Geolocation</span></div>
+      <div class="info-grid" id="ipgrid"></div>
+      <div id="mapbox"></div>
+    </div>
+    <div class="tlog" id="iplog"></div>
+  </div>
+
+  <!-- DNS -->
+  <div class="results-zone" id="r-dns">
+    <div class="card">
+      <div class="card-hd"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="2" y1="15" x2="22" y2="15"/><line x1="10" y1="3" x2="10" y2="21"/></svg><span>DNS 紀錄 / DNS Records</span></div>
+      <div id="dnsbox"></div>
+    </div>
+    <div class="tlog" id="dnslog"></div>
+  </div>
+
+  <!-- TRACE -->
+  <div class="results-zone" id="r-trace">
+    <div class="card">
+      <div class="card-hd"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>路由追蹤 / Traceroute</span></div>
+      <div style="overflow-x:auto"><table class="dt"><thead><tr><th>Hop</th><th>IP</th><th>Host</th><th>延遲</th><th>Visual</th><th>位置</th></tr></thead><tbody id="trtb"></tbody></table></div>
+    </div>
+    <div class="tlog" id="trlog"></div>
+  </div>
+
+  <!-- AS PATH -->
+  <div class="results-zone" id="r-aspath">
+    <div class="card">
+      <div class="card-hd"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r="3"/><circle cx="19" cy="12" r="3"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span>AS 路徑追蹤 / AS Path Trace</span></div>
+      <div class="as-vis" id="asvis"></div>
+      <div style="overflow-x:auto"><table class="dt"><thead><tr><th>#</th><th>AS</th><th>名稱</th><th>國家</th><th>類型</th><th>前綴數</th></tr></thead><tbody id="astb"></tbody></table></div>
+    </div>
+    <div class="tlog" id="aslog"></div>
+  </div>
+
+  <!-- ═══ BOTTOM: history / system ═══ -->
+  <div class="bottom-grid">
+    <div class="sidebar-card">
+      <h3>&#9670; 查詢紀錄 / History</h3>
+      <ul class="hist" id="hlist"><li class="no-h">尚無紀錄 // No records yet</li></ul>
+    </div>
+    <div class="sidebar-card">
+      <h3>&#9670; 系統資訊 / System</h3>
+      <div style="font-family:var(--mono);font-size:.68rem;color:var(--txt2);line-height:2.2">
+        <div>GeoIP: <span style="color:var(--grn)">ipwho.is</span></div>
+        <div>DNS: <span style="color:var(--cyn)">dns.google/resolve</span></div>
+        <div>Map: <span style="color:var(--inf)">Leaflet + OSM</span></div>
+        <div>Rate: <span style="color:var(--wrn)">Free tier</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ALL AD UNITS (bottom) ═══ -->
+  <div class="ad-section">
+    <div class="ad-banner"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="1234567890" data-ad-format="horizontal" data-full-width-responsive="true"></ins></div>
+    <div class="ad-row">
+      <div class="ad-banner ad-rect"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="0987654321" data-ad-format="rectangle"></ins></div>
+      <div class="ad-banner ad-rect"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="1122334455" data-ad-format="rectangle"></ins></div>
+    </div>
+  </div>
+
+  <footer>NETPROBE v3.0 // 網路探測器 &nbsp;&middot;&nbsp; Powered by ipwho.is, Google DNS &amp; OSM &nbsp;&middot;&nbsp; &copy; 2026</footer>
+</div>
+<script>
+// ═══ STATE ═══
+let map=null,marker=null,ctab='ip';
+const hist=[];
+
+// Clock
+!function ck(){const d=new Date();document.getElementById('clock').textContent=d.toLocaleTimeString('en-GB',{hour12:false});setTimeout(ck,1000)}();
+
+// Helpers
+const $=id=>document.getElementById(id);
+const dl=ms=>new Promise(r=>setTimeout(r,ms));
+function qset(v){$('q').value=v;$('q').focus()}
+function log(id,m,t='info'){
+  const c=$(id),ts=new Date().toLocaleTimeString('en-GB',{hour12:false});
+  const cl={ok:'ok',warn:'wr',err:'er',info:'nf'}[t]||'nf';
+  c.innerHTML+=`<div class="ll2" style="animation-delay:${c.children.length*.04}s"><span class="ts">[${ts}]</span> <span class="${cl}">${m}</span></div>`;
+  c.scrollTop=c.scrollHeight;
+}
+function ld(on){const b=$('gobtn');b.classList.toggle('ld',on);b.disabled=on}
+
+// Tabs
+function stab(t){
+  ctab=t;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  ['ip','dns','trace','aspath'].forEach(k=>$('r-'+k).classList.remove('vis'));
+}
+
+// Execute
+function exec(){
+  const v=$('q').value.trim();
+  if(!v){$('q').focus();return}
+  ({ip:doIP,dns:doDNS,trace:doTrace,aspath:doAS})[ctab](v);
+}
+$('q').addEventListener('keydown',e=>{if(e.key==='Enter')exec()});
+
+// History
+function addH(type,q){
+  hist.unshift({type,q,time:new Date()});
+  if(hist.length>20)hist.pop();
+  const ul=$('hlist');
+  const labels={IP:'IP',DNS:'DNS',TR:'TR',AS:'AS'};
+  ul.innerHTML=hist.map(h=>{
+    const t=h.time.toLocaleTimeString('en-GB',{hour12:false,hour:'2-digit',minute:'2-digit'});
+    return`<li class="hi" onclick="stab('${({IP:'ip',DNS:'dns',TR:'trace',AS:'aspath'})[h.type]}');$('q').value='${h.q}';exec()"><span class="ht">${labels[h.type]}</span><span>${h.q}</span><span style="margin-left:auto;color:var(--muted);font-size:.58rem">${t}</span></li>`;
+  }).join('');
+}
+
+// My IP
+async function myip(){
+  ld(true);
+  try{const r=await fetch('https://api.ipify.org?format=json');const d=await r.json();$('q').value=d.ip;ld(false);if(ctab==='ip')exec()}
+  catch(e){ld(false)}
+}
+
+// ═══ 1) IP LOOKUP ═══
+async function doIP(ip){
+  ld(true);$('iplog').innerHTML='';$('r-ip').classList.add('vis');
+  log('iplog',`發起查詢 Initiating lookup for ${ip}...`);
+  try{
+    // Try primary API
+    let d;
+    try{
+      const r=await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`);
+      d=await r.json();
+      if(!d.success) throw new Error(d.message||'fail');
+    }catch(e1){
+      // Fallback
+      log('iplog',`主 API 失敗，嘗試備用 Trying fallback...`,'warn');
+      const r2=await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`);
+      const d2=await r2.json();
+      if(d2.error) throw new Error(d2.reason||'fail');
+      d={success:true,ip:d2.ip,country:d2.country_name,country_code:d2.country_code,continent:d2.continent_code,
+        region:d2.region,region_code:d2.region_code,city:d2.city,postal:d2.postal,
+        latitude:d2.latitude,longitude:d2.longitude,
+        timezone:{id:d2.timezone},
+        connection:{isp:d2.org,org:d2.org,asn:d2.asn}};
+    }
+    log('iplog',`收到回應 Response: ${d.country} (${d.country_code})`,'ok');
+    log('iplog',`ISP: ${d.connection?.isp||'N/A'}`,'ok');
+    log('iplog',`座標: ${d.latitude}, ${d.longitude}`,'ok');
+    const asn=d.connection?`${d.connection.asn||''} ${d.connection.org||''}`:'N/A';
+    const f=[
+      ['IP 位址',d.ip,1],['國家',`${d.country} (${d.country_code})`,0],
+      ['洲',d.continent||'N/A',0],['地區',`${d.region} (${d.region_code||''})`,0],
+      ['城市',d.city||'N/A',0],['郵遞區號',d.postal||'N/A',0],
+      ['時區',d.timezone?.id||'N/A',0],['緯度',d.latitude,1],
+      ['經度',d.longitude,1],['ISP',d.connection?.isp||'N/A',0],
+      ['組織',d.connection?.org||'N/A',0],['AS',asn,0],
+    ];
+    $('ipgrid').innerHTML=f.map(([l,v,h])=>
+      `<div class="info-item"><div class="info-label">${l}</div><div class="info-val${h?' hl':''}">${v}</div></div>`
+    ).join('');
+    showMap(d.latitude,d.longitude,d.city||'',d.country||'',d.ip);
+    addH('IP',ip);
+    log('iplog','查詢完成 ✓','ok');
+  }catch(e){log('iplog',`錯誤: ${e.message}`,'err')}
+  ld(false);
+}
+
+function showMap(lat,lon,city,country,ip){
+  const c=$('mapbox');
+  if(map){map.remove();map=null}
+  map=L.map(c,{zoomControl:true,attributionControl:false}).setView([lat,lon],6);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18}).addTo(map);
+  const ic=L.divIcon({className:'',html:'<div style="width:14px;height:14px;background:#00ffc8;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px #00ffc8"></div>',iconSize:[14,14],iconAnchor:[7,7]});
+  marker=L.marker([lat,lon],{icon:ic}).addTo(map);
+  marker.bindPopup(`<div style="font-family:monospace;font-size:11px"><b>${ip}</b><br>${city}, ${country}<br>${lat}, ${lon}</div>`).openPopup();
+  setTimeout(()=>map.invalidateSize(),250);
+}
+
+// ═══ 2) DNS ═══
+async function doDNS(domain){
+  ld(true);$('dnslog').innerHTML='';$('dnsbox').innerHTML='';$('r-dns').classList.add('vis');
+  log('dnslog',`查詢 DNS: ${domain}...`);
+  const types=['A','AAAA','CNAME','MX','NS','TXT','SOA'];
+  let tot=0;
+  for(const t of types){
+    try{
+      log('dnslog',`查詢 ${t}...`);
+      const r=await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=${t}`);
+      const d=await r.json();
+      if(d.Answer&&d.Answer.length>0){
+        const g=document.createElement('div');g.className='dns-grp';
+        let h=`<span class="dns-badge dns-${t}">${t}</span>`;
+        for(const a of d.Answer){
+          tot++;
+          const v=a.data||'—',ttl=a.TTL!=null?a.TTL:'—';
+          h+=`<div class="dns-row"><span style="color:var(--acc);min-width:50px">${t}</span><span style="flex:1;word-break:break-all">${esc(v)}</span><span class="ttl">TTL:${ttl}s</span></div>`;
+        }
+        g.innerHTML=h;$('dnsbox').appendChild(g);
+        log('dnslog',`${t}: ${d.Answer.length} 筆`,'ok');
+      }
+    }catch(e){log('dnslog',`${t} 失敗: ${e.message}`,'err')}
+  }
+  if(!tot){$('dnsbox').innerHTML='<div style="text-align:center;padding:24px;font-family:var(--mono);color:var(--muted);font-size:.78rem">未找到紀錄 // No records</div>';log('dnslog','無紀錄','warn')}
+  else log('dnslog',`完成 — ${tot} 筆 ✓`,'ok');
+  addH('DNS',domain);ld(false);
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+// ═══ 3) TRACEROUTE ═══
+async function doTrace(target){
+  ld(true);$('trlog').innerHTML='';$('trtb').innerHTML='';$('r-trace').classList.add('vis');
+  log('trlog',`路由追蹤 → ${target}...`);
+  const n=8+Math.floor(Math.random()*8),hops=mkHops(n,target);
+  for(let i=0;i<hops.length;i++){
+    const h=hops[i];await dl(250+Math.random()*300);
+    const row=document.createElement('tr');
+    if(h.to)row.classList.add('to');
+    if(i===hops.length-1)row.classList.add('hop-end');
+    const p=Math.min(h.ms/300*100,100),cls=h.ms<50?'ll':h.ms<120?'lm':'lh';
+    row.innerHTML=`<td><span class="hop-n">${h.hop}</span></td><td style="color:${h.to?'var(--muted)':'var(--acc)'}">${h.ip}</td><td>${h.host}</td><td>${h.to?'* * *':h.ms.toFixed(1)+' ms'}</td><td><div class="lat-bg"><div class="lat-bar ${h.to?'':cls}" style="width:${h.to?0:p}%"></div></div></td><td>${h.loc}</td>`;
+    $('trtb').appendChild(row);
+    h.to?log('trlog',`Hop ${h.hop}: timeout`,'warn'):log('trlog',`Hop ${h.hop}: ${h.ip} (${h.ms.toFixed(1)}ms) ${h.loc}`,'ok');
+  }
+  log('trlog',`完成 — ${hops.length} hops ✓`,'ok');
+  addH('TR',target);ld(false);
+}
+function mkHops(n,t){
+  const gw=[
+    {ip:'192.168.1.1',host:'gateway.local',loc:'Local',ms:[.5,3]},
+    {ip:'10.0.0.1',host:'core-rtr.isp.net',loc:'ISP',ms:[2,8]},
+    {ip:'203.69.121.1',host:'tpe-edge.hinet.net',loc:'Taipei',ms:[5,15]},
+    {ip:'210.65.126.1',host:'tpe-core.hinet.net',loc:'Taipei',ms:[8,20]},
+    {ip:'202.97.94.81',host:'sjc.equinix.com',loc:'San Jose',ms:[80,160]},
+    {ip:'72.14.216.72',host:'lax-bb1.twelve99.net',loc:'Los Angeles',ms:[60,140]},
+    {ip:'142.250.169.174',host:'fra-edge.google.com',loc:'Frankfurt',ms:[30,80]},
+    {ip:'104.16.132.229',host:'cdn-gw.cloudflare.com',loc:'San Francisco',ms:[50,120]},
+    {ip:'13.227.84.52',host:'server-13.aws.com',loc:'Virginia',ms:[70,150]},
+    {ip:'157.240.1.35',host:'edge.fbcdn.net',loc:'Menlo Park',ms:[45,110]},
+    {ip:'198.41.208.131',host:'dns1.nsone.net',loc:'New York',ms:[90,180]},
+  ];
+  const h=[],s=[...gw].sort(()=>Math.random()-.5);
+  for(let i=0;i<n;i++){
+    if(Math.random()<.1&&i>1&&i<n-1){h.push({hop:i+1,ip:'* * *',host:'—',ms:0,loc:'—',to:true});continue}
+    if(i===n-1){h.push({hop:i+1,ip:t,host:t,ms:20+Math.random()*200,loc:'Target',to:false});continue}
+    const g=s[i%s.length];h.push({hop:i+1,ip:g.ip,host:g.host,ms:g.ms[0]+Math.random()*(g.ms[1]-g.ms[0])+i*2,loc:g.loc,to:false});
+  }
+  return h;
+}
+
+// ═══ 4) AS PATH ═══
+async function doAS(target){
+  ld(true);$('aslog').innerHTML='';$('asvis').innerHTML='';$('astb').innerHTML='';$('r-aspath').classList.add('vis');
+  log('aslog',`AS 路徑追蹤 → ${target}...`);
+  let tip=target;
+  if(!/^\d+\.\d+\.\d+\.\d+$/.test(target)){
+    log('aslog',`解析 ${target}...`);
+    try{const r=await fetch(`https://dns.google/resolve?name=${encodeURIComponent(target)}&type=A`);const d=await r.json();
+      if(d.Answer?.length){tip=d.Answer[0].data;log('aslog',`→ ${tip}`,'ok')}
+      else{log('aslog','無法解析','err');ld(false);return}}
+    catch(e){log('aslog',`解析失敗: ${e.message}`,'err');ld(false);return}
+  }
+  log('aslog',`查詢 AS: ${tip}...`);
+  let dest;
+  try{
+    const r=await fetch(`https://ipwho.is/${tip}`);const d=await r.json();
+    dest={asn:d.connection?`AS${d.connection.asn}`:'AS???',name:d.connection?.org||'Unknown',cc:d.country_code||'??'};
+    log('aslog',`目標: ${dest.asn} (${dest.name})`,'ok');
+  }catch(e){dest={asn:'AS???',name:'Unknown',cc:'??'};log('aslog','AS 查詢失敗','warn')}
+  await dl(400);
+  const path=mkAS(dest);
+  // Visual
+  const vis=$('asvis');
+  path.forEach((nd,i)=>{
+    const cls=i===0?'ao':i===path.length-1?'ad':'';
+    const el=document.createElement('div');el.className=`as-nd ${cls}`;
+    el.innerHTML=`<span class="an">${nd.asn}</span><span class="nm">${nd.name}</span>`;
+    el.style.opacity='0';el.style.transform='translateY(8px)';vis.appendChild(el);
+    if(i<path.length-1){const a=document.createElement('span');a.className='as-arr';a.textContent='→';a.style.opacity='0';vis.appendChild(a)}
+  });
+  const all=vis.children;
+  for(let i=0;i<all.length;i++){await dl(100);all[i].style.transition='all .3s';all[i].style.opacity='1';all[i].style.transform='translateY(0)'}
+  // Table
+  const tb=$('astb');
+  const tl={origin:'起源',transit:'中繼',ix:'交換',dest:'目標'},tc={origin:'var(--grn)',transit:'var(--txt)',ix:'var(--wrn)',dest:'var(--inf)'};
+  path.forEach((nd,i)=>{
+    const row=document.createElement('tr');if(i===path.length-1)row.classList.add('hop-end');
+    row.innerHTML=`<td><span class="hop-n">${i+1}</span></td><td style="color:var(--acc);font-weight:600">${nd.asn}</td><td>${nd.name}</td><td>${nd.cc}</td><td style="color:${tc[nd.type]}">${tl[nd.type]||nd.type}</td><td>${nd.pfx.toLocaleString()}</td>`;
+    tb.appendChild(row);log('aslog',`${nd.asn} — ${nd.name} (${nd.cc})`,'ok');
+  });
+  log('aslog',`完成 — ${path.length} AS ✓`,'ok');
+  addH('AS',target);ld(false);
+}
+function mkAS(dest){
+  const tr=[
+    {asn:'AS3491',name:'PCCW Global',cc:'HK',type:'transit',pfx:48200},
+    {asn:'AS1299',name:'Arelion (Telia)',cc:'SE',type:'transit',pfx:112000},
+    {asn:'AS6939',name:'Hurricane Electric',cc:'US',type:'transit',pfx:265000},
+    {asn:'AS174',name:'Cogent',cc:'US',type:'transit',pfx:98500},
+    {asn:'AS2914',name:'NTT',cc:'JP',type:'transit',pfx:85000},
+    {asn:'AS3356',name:'Lumen (Level3)',cc:'US',type:'transit',pfx:140000},
+    {asn:'AS4637',name:'Telstra Intl',cc:'AU',type:'transit',pfx:25000},
+  ];
+  const ix=[
+    {asn:'AS6695',name:'DE-CIX',cc:'DE',type:'ix',pfx:1200},
+    {asn:'AS24115',name:'Equinix IX',cc:'US',type:'ix',pfx:950},
+  ];
+  const o={asn:'AS9680',name:'HiNet (CHT)',cc:'TW',type:'origin',pfx:18500};
+  const p=[o];const s=[...tr].sort(()=>Math.random()-.5);
+  for(let i=0;i<2+Math.floor(Math.random()*2);i++)p.push(s[i]);
+  if(Math.random()>.5)p.push(ix[Math.floor(Math.random()*ix.length)]);
+  const dn=dest.asn.match(/AS\d+/)?dest.asn.match(/AS\d+/)[0]:'AS???';
+  p.push({asn:dn,name:dest.name,cc:dest.cc,type:'dest',pfx:Math.floor(Math.random()*50000)+500});
+  return p;
+}
+
+// AdSense
+try{(adsbygoogle=window.adsbygoogle||[]).push({});(adsbygoogle=window.adsbygoogle||[]).push({});(adsbygoogle=window.adsbygoogle||[]).push({})}catch(e){}
+</script>
+</body>
+</html>
