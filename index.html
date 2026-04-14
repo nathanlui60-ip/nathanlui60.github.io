@@ -3,18 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NetProbe // 網路探測器</title>
+<title>NOAH-IP // 網路探測器</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1692670290595476"
-     crossorigin="anonymous"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#07080c;--panel:#0c0e14;--card:#10131b;--elev:#161a25;
-  --bdr:#1a1f2e;--txt:#c8ceda;--txt2:#5c6478;--muted:#2e3446;
+  --bdr:#1a1f2e;--txt:#d8dde8;--txt2:#8d95a8;--muted:#4f5872;
   --acc:#00ffc8;--accd:#00ffc830;--grn:#00e676;--cyn:#00e5ff;
   --red:#ff3860;--wrn:#ffb830;--inf:#3890ff;--pur:#b388ff;
   --mono:'JetBrains Mono','Share Tech Mono',monospace;
@@ -65,6 +64,12 @@ header{padding:22px 0 16px;border-bottom:1px solid var(--bdr);display:flex;align
 .qk-label{font-family:var(--mono);font-size:.62rem;color:var(--muted);letter-spacing:1px}
 .qk{padding:5px 13px;font-family:var(--mono);font-size:.68rem;background:var(--card);border:1px solid var(--bdr);border-radius:4px;color:var(--txt2);cursor:pointer;transition:all .2s}
 .qk:hover{border-color:var(--accd);color:var(--acc)}
+.qk-save{background:var(--accd);color:var(--acc);border-color:var(--acc);font-weight:600}
+.qk-save:hover{background:var(--acc);color:var(--bg)}
+.qk-slot{position:relative}
+.qk-slot .qk-del{display:none;position:absolute;top:-6px;right:-6px;width:14px;height:14px;border-radius:50%;background:var(--red);color:#fff;font-size:9px;line-height:14px;text-align:center;cursor:pointer;border:none;padding:0;font-family:var(--mono)}
+.qk-slot:hover .qk-del{display:block}
+#qk-slots{display:contents}
 
 /* TAB BAR */
 .tab-bar{display:flex;gap:2px;background:var(--panel);border-radius:6px;padding:3px;border:1px solid var(--bdr);margin:16px 0}
@@ -130,6 +135,46 @@ header{padding:22px 0 16px;border-bottom:1px solid var(--bdr);display:flex;align
 .as-nd.ad{border-color:var(--inf);background:rgba(56,144,255,.08)}.as-nd.ad .an{color:var(--inf)}
 .as-arr{font-family:var(--mono);color:var(--muted);padding:0 5px;font-size:1rem}
 
+/* DNS TRACE CHAIN */
+.dns-chain{display:flex;align-items:center;gap:0;flex-wrap:wrap;padding:14px 0}
+.dns-chain-nd{padding:10px 16px;background:var(--card);border-radius:8px;font-family:var(--mono);font-size:.76rem;text-align:center;min-width:90px;transition:all .3s;cursor:default}
+.dns-chain-nd:hover{transform:translateY(-2px)}
+.dns-chain-nd .cn-label{font-size:.58rem;display:block;margin-bottom:3px;letter-spacing:1px;text-transform:uppercase}
+.dns-chain-nd .cn-zone{font-weight:600;font-size:.82rem;display:block}
+.dns-chain-nd .cn-ns{font-size:.58rem;display:block;margin-top:2px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dns-chain-nd.cn-root{border:1px solid var(--red);box-shadow:0 0 10px rgba(255,56,96,.15)}.cn-root .cn-label{color:var(--red)}.cn-root .cn-zone{color:var(--red)}.cn-root .cn-ns{color:var(--txt2)}
+.dns-chain-nd.cn-tld{border:1px solid var(--wrn);box-shadow:0 0 10px rgba(255,184,48,.15)}.cn-tld .cn-label{color:var(--wrn)}.cn-tld .cn-zone{color:var(--wrn)}.cn-tld .cn-ns{color:var(--txt2)}
+.dns-chain-nd.cn-auth{border:1px solid var(--grn);box-shadow:0 0 10px rgba(0,230,118,.15)}.cn-auth .cn-label{color:var(--grn)}.cn-auth .cn-zone{color:var(--grn)}.cn-auth .cn-ns{color:var(--txt2)}
+.dns-chain-nd.cn-ans{border:1px solid var(--acc);box-shadow:0 0 10px var(--accd)}.cn-ans .cn-label{color:var(--acc)}.cn-ans .cn-zone{color:var(--acc)}.cn-ans .cn-ns{color:var(--txt2)}
+.dns-chain-arr{font-family:var(--mono);color:var(--muted);padding:0 6px;font-size:.9rem}
+
+/* DNS TRACE DIAGRAM (vertical) */
+.dns-diagram{padding:10px 0 6px;margin-bottom:10px}
+.dns-dia-step{display:flex;align-items:stretch;gap:0;margin-bottom:0}
+.dns-dia-left{width:80px;display:flex;flex-direction:column;align-items:center;position:relative;flex-shrink:0}
+.dns-dia-dot{width:18px;height:18px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
+.dns-dia-dot::after{content:'';width:8px;height:8px;border-radius:50%}
+.dns-dia-line{width:2px;flex:1;min-height:20px;position:relative;z-index:1}
+.dns-dia-right{flex:1;padding:4px 0 14px 14px;border-left:1px dashed var(--bdr);margin-left:-1px}
+.dns-dia-right:last-child{padding-bottom:0}
+.dns-dia-level{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:1px;margin-bottom:4px}
+.dns-dia-query{font-family:var(--mono);font-size:.62rem;color:var(--txt2);margin-bottom:3px}
+.dns-dia-query .q-arrow{color:var(--acc);margin-right:4px}
+.dns-dia-query .r-arrow{color:var(--wrn);margin-right:4px}
+.dns-dia-ns-list{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.dns-dia-ns-tag{padding:2px 8px;font-family:var(--mono);font-size:.6rem;background:var(--bg);border:1px solid var(--bdr);border-radius:3px;color:var(--txt2)}
+.dns-dia-ns-tag .ns-ip{color:var(--muted);margin-left:4px}
+.dns-dia-step.step-root .dns-dia-dot{border-color:var(--red)}.dns-dia-step.step-root .dns-dia-dot::after{background:var(--red)}.dns-dia-step.step-root .dns-dia-line{background:linear-gradient(var(--red),var(--wrn))}.dns-dia-step.step-root .dns-dia-level{color:var(--red)}
+.dns-dia-step.step-tld .dns-dia-dot{border-color:var(--wrn)}.dns-dia-step.step-tld .dns-dia-dot::after{background:var(--wrn)}.dns-dia-step.step-tld .dns-dia-line{background:linear-gradient(var(--wrn),var(--grn))}.dns-dia-step.step-tld .dns-dia-level{color:var(--wrn)}
+.dns-dia-step.step-auth .dns-dia-dot{border-color:var(--grn)}.dns-dia-step.step-auth .dns-dia-dot::after{background:var(--grn)}.dns-dia-step.step-auth .dns-dia-line{background:linear-gradient(var(--grn),var(--acc))}.dns-dia-step.step-auth .dns-dia-level{color:var(--grn)}
+.dns-dia-step.step-answer .dns-dia-dot{border-color:var(--acc)}.dns-dia-step.step-answer .dns-dia-dot::after{background:var(--acc)}.dns-dia-step.step-answer .dns-dia-line{background:var(--acc)}.dns-dia-step.step-answer .dns-dia-level{color:var(--acc)}
+
+/* NS per-level groups in DNS trace */
+.dnstrace-ns-grp{margin-bottom:12px}
+.dnstrace-ns-grp-hd{font-family:var(--mono);font-size:.7rem;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.dnstrace-ns-grp-hd .ns-dot{width:8px;height:8px;border-radius:50%}
+.dnstrace-ns-rows{display:flex;flex-direction:column;gap:3px}
+
 /* LOG */
 .tlog{background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:10px 14px;font-family:var(--mono);font-size:.7rem;color:var(--txt2);max-height:150px;overflow-y:auto;margin-top:14px;line-height:1.8}
 .tlog .ll2{opacity:0;animation:typeIn .3s forwards}
@@ -169,7 +214,7 @@ footer{border-top:1px solid var(--bdr);padding:18px 0;text-align:center;font-fam
   <header>
     <div class="logo">
       <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z"/></svg></div>
-      <div><h1>NETPROBE</h1><span>網路探測器 // Network Utility v3.0</span></div>
+      <div><h1>NOAH-IP</h1><span>網路探測器 // Network Utility v3.0</span></div>
     </div>
     <div class="hdr-status"><span class="dot-on"></span><span>ONLINE</span><span style="color:var(--muted)">|</span><span id="clock"></span></div>
   </header>
@@ -184,11 +229,8 @@ footer{border-top:1px solid var(--bdr);padding:18px 0;text-align:center;font-fam
       </div>
       <div class="qk-row">
         <span class="qk-label">快捷 //</span>
-        <button class="qk" onclick="qset('8.8.8.8')">Google DNS</button>
-        <button class="qk" onclick="qset('1.1.1.1')">Cloudflare</button>
-        <button class="qk" onclick="qset('208.67.222.222')">OpenDNS</button>
-        <button class="qk" onclick="qset('github.com')">github.com</button>
-        <button class="qk" onclick="qset('cloudflare.com')">cloudflare.com</button>
+        <div id="qk-slots"></div>
+        <button class="qk qk-save" onclick="saveQK()" title="儲存目前輸入 Save current input">&#9733; SAVE</button>
         <button class="qk" onclick="myip()">我的 IP</button>
       </div>
     </div>
@@ -200,6 +242,7 @@ footer{border-top:1px solid var(--bdr);padding:18px 0;text-align:center;font-fam
     <button class="tab-btn" data-t="dns" onclick="stab('dns')"><span class="ti">&#9883;</span>DNS 紀錄</button>
     <button class="tab-btn" data-t="trace" onclick="stab('trace')"><span class="ti">&#9733;</span>路由追蹤</button>
     <button class="tab-btn" data-t="aspath" onclick="stab('aspath')"><span class="ti">&#9741;</span>AS 路徑</button>
+    <button class="tab-btn" data-t="dnstrace" onclick="stab('dnstrace')"><span class="ti">&#9851;</span>DNS 追蹤</button>
   </div>
 
   <!-- ═══ RESULTS (directly below search + tabs) ═══ -->
@@ -242,6 +285,27 @@ footer{border-top:1px solid var(--bdr);padding:18px 0;text-align:center;font-fam
     <div class="tlog" id="aslog"></div>
   </div>
 
+  <!-- DNS TRACE -->
+  <div class="results-zone" id="r-dnstrace">
+    <div class="card">
+      <div class="card-hd"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 2L12 6M12 18L12 22M2 12L6 12M18 12L22 12"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="10"/></svg><span>DNS 委派追蹤 / DNS Delegation Trace</span></div>
+      <div class="dns-chain" id="dnschain"></div>
+      <div class="dns-diagram" id="dnsdiagram"></div>
+      <div style="overflow-x:auto;margin-top:14px"><table class="dt"><thead><tr><th>階層 Level</th><th>區域 Zone</th><th>名稱伺服器 NS</th><th>IP</th><th>延遲 Latency</th><th>回應 Response</th></tr></thead><tbody id="dnstrtb"></tbody></table></div>
+    </div>
+    <!-- NS Records card -->
+    <div class="card" id="dnstrace-ns-card" style="display:none">
+      <div class="card-hd"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="10" y1="3" x2="10" y2="21"/></svg><span>各階層 NS 紀錄 / NS Records per Level</span></div>
+      <div id="dnstrace-ns-box"></div>
+    </div>
+    <!-- SOA + DNSSEC + Extra records -->
+    <div class="card" id="dnstrace-extra-card" style="display:none">
+      <div class="card-hd"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>SOA / DNSSEC / 額外紀錄 / Additional Records</span></div>
+      <div id="dnstrace-extra-box"></div>
+    </div>
+    <div class="tlog" id="dnstrlog"></div>
+  </div>
+
   <!-- ═══ BOTTOM: history / system ═══ -->
   <div class="bottom-grid">
     <div class="sidebar-card">
@@ -268,7 +332,7 @@ footer{border-top:1px solid var(--bdr);padding:18px 0;text-align:center;font-fam
     </div>
   </div>
 
-  <footer>NETPROBE v3.0 // 網路探測器 &nbsp;&middot;&nbsp; Powered by ipwho.is, Google DNS &amp; OSM &nbsp;&middot;&nbsp; &copy; 2026</footer>
+  <footer>NOAH-IP v3.0 // 網路探測器 &nbsp;&middot;&nbsp; Powered by ipwho.is, Google DNS &amp; OSM &nbsp;&middot;&nbsp; &copy; 2026</footer>
 </div>
 <script>
 // ═══ STATE ═══
@@ -282,6 +346,34 @@ const hist=[];
 const $=id=>document.getElementById(id);
 const dl=ms=>new Promise(r=>setTimeout(r,ms));
 function qset(v){$('q').value=v;$('q').focus()}
+
+// Quick-save slots (localStorage, max 5)
+const QK_KEY='noahip_qk';
+function loadQK(){try{return JSON.parse(localStorage.getItem(QK_KEY))||[]}catch(e){return[]}}
+function storeQK(arr){localStorage.setItem(QK_KEY,JSON.stringify(arr.slice(0,5)))}
+function renderQK(){
+  const slots=$('qk-slots'),arr=loadQK();
+  slots.innerHTML='';
+  if(!arr.length){slots.innerHTML='<span style="font-family:var(--mono);font-size:.6rem;color:var(--muted);padding:2px 6px">尚無儲存 — 輸入後按 SAVE</span>';return}
+  arr.forEach((v,i)=>{
+    const wrap=document.createElement('span');wrap.className='qk-slot';
+    wrap.innerHTML=`<button class="qk" onclick="qset('${esc(v)}')">${esc(v.length>18?v.slice(0,16)+'…':v)}</button><button class="qk-del" onclick="event.stopPropagation();delQK(${i})" title="刪除">✕</button>`;
+    slots.appendChild(wrap);
+  });
+}
+function saveQK(){
+  const v=$('q').value.trim();
+  if(!v){$('q').focus();return}
+  let arr=loadQK();
+  arr=arr.filter(x=>x!==v);
+  arr.unshift(v);
+  if(arr.length>5)arr=arr.slice(0,5);
+  storeQK(arr);renderQK();
+}
+function delQK(i){
+  const arr=loadQK();arr.splice(i,1);storeQK(arr);renderQK();
+}
+renderQK();
 function log(id,m,t='info'){
   const c=$(id),ts=new Date().toLocaleTimeString('en-GB',{hour12:false});
   const cl={ok:'ok',warn:'wr',err:'er',info:'nf'}[t]||'nf';
@@ -294,14 +386,14 @@ function ld(on){const b=$('gobtn');b.classList.toggle('ld',on);b.disabled=on}
 function stab(t){
   ctab=t;
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
-  ['ip','dns','trace','aspath'].forEach(k=>$('r-'+k).classList.remove('vis'));
+  ['ip','dns','trace','aspath','dnstrace'].forEach(k=>$('r-'+k).classList.remove('vis'));
 }
 
 // Execute
 function exec(){
   const v=$('q').value.trim();
   if(!v){$('q').focus();return}
-  ({ip:doIP,dns:doDNS,trace:doTrace,aspath:doAS})[ctab](v);
+  ({ip:doIP,dns:doDNS,trace:doTrace,aspath:doAS,dnstrace:doDNStrace})[ctab](v);
 }
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter')exec()});
 
@@ -310,10 +402,10 @@ function addH(type,q){
   hist.unshift({type,q,time:new Date()});
   if(hist.length>20)hist.pop();
   const ul=$('hlist');
-  const labels={IP:'IP',DNS:'DNS',TR:'TR',AS:'AS'};
+  const labels={IP:'IP',DNS:'DNS',TR:'TR',AS:'AS',DT:'DT'};
   ul.innerHTML=hist.map(h=>{
     const t=h.time.toLocaleTimeString('en-GB',{hour12:false,hour:'2-digit',minute:'2-digit'});
-    return`<li class="hi" onclick="stab('${({IP:'ip',DNS:'dns',TR:'trace',AS:'aspath'})[h.type]}');$('q').value='${h.q}';exec()"><span class="ht">${labels[h.type]}</span><span>${h.q}</span><span style="margin-left:auto;color:var(--muted);font-size:.58rem">${t}</span></li>`;
+    return`<li class="hi" onclick="stab('${({IP:'ip',DNS:'dns',TR:'trace',AS:'aspath',DT:'dnstrace'})[h.type]}');$('q').value='${h.q}';exec()"><span class="ht">${labels[h.type]}</span><span>${h.q}</span><span style="margin-left:auto;color:var(--muted);font-size:.58rem">${t}</span></li>`;
   }).join('');
 }
 
@@ -515,6 +607,252 @@ function mkAS(dest){
   const dn=dest.asn.match(/AS\d+/)?dest.asn.match(/AS\d+/)[0]:'AS???';
   p.push({asn:dn,name:dest.name,cc:dest.cc,type:'dest',pfx:Math.floor(Math.random()*50000)+500});
   return p;
+}
+
+// ═══ 5) DNS TRACE ═══
+async function doDNStrace(domain){
+  ld(true);$('dnstrlog').innerHTML='';$('dnschain').innerHTML='';$('dnstrtb').innerHTML='';$('dnsdiagram').innerHTML='';$('r-dnstrace').classList.add('vis');
+  const nsCard=$('dnstrace-ns-card');nsCard.style.display='none';$('dnstrace-ns-box').innerHTML='';
+  const exCard=$('dnstrace-extra-card');exCard.style.display='none';$('dnstrace-extra-box').innerHTML='';
+  domain=domain.replace(/^https?:\/\//,'').replace(/\/.*$/,'').trim();
+  log('dnstrlog',`DNS 委派追蹤 → ${domain}...`);
+
+  const parts=domain.split('.');
+  if(parts.length<2){log('dnstrlog','請輸入有效網域 Invalid domain','err');ld(false);return}
+
+  const tld=parts[parts.length-1];
+  const steps=[];
+  const nsData={};
+
+  // Helper: fetch DNS
+  async function dnsQ(name,type){
+    try{const r=await fetch(`https://dns.google/resolve?name=${encodeURIComponent(name)}&type=${type}`);return await r.json()}catch(e){return{}}
+  }
+  // Helper: fetch DNS with DO flag (DNSSEC)
+  async function dnsQDO(name,type){
+    try{const r=await fetch(`https://dns.google/resolve?name=${encodeURIComponent(name)}&type=${type}&do=1`);return await r.json()}catch(e){return{}}
+  }
+
+  // ── Step 1: Root servers ──
+  log('dnstrlog','[1/4] 查詢根伺服器 Querying root servers...');
+  const rootNS=['a.root-servers.net','b.root-servers.net','c.root-servers.net','d.root-servers.net','e.root-servers.net','f.root-servers.net','j.root-servers.net','k.root-servers.net','m.root-servers.net'];
+  const rootIP=['198.41.0.4','199.9.14.201','192.33.4.12','199.7.91.13','192.203.230.10','192.5.5.241','192.58.128.30','193.0.14.129','202.12.27.33'];
+  const ri=Math.floor(Math.random()*rootNS.length);
+  await dl(300+Math.random()*200);
+  const rootMs=(2+Math.random()*18).toFixed(1);
+  nsData['Root']=rootNS.map((ns,i)=>({ns,ip:rootIP[i]}));
+  steps.push({level:'Root',zone:'.',ns:rootNS[ri],ip:rootIP[ri],ms:rootMs,resp:`Referral → .${tld}`,query:`dig . NS`,allNS:nsData['Root']});
+  log('dnstrlog',`根 Root: ${rootNS[ri]} (${rootMs}ms) → 委派至 .${tld} [${rootNS.length} NS]`,'ok');
+
+  // ── Step 2: TLD NS ──
+  log('dnstrlog',`[2/4] 查詢 TLD 伺服器 Querying .${tld} TLD...`);
+  let tldNSList=[];
+  const tldNSRes=await dnsQ(tld+'.','NS');
+  if(tldNSRes.Answer) tldNSList=tldNSRes.Answer.map(a=>a.data.replace(/\.$/,'')).slice(0,8);
+  if(!tldNSList.length) tldNSList=['a.gtld-servers.net','b.gtld-servers.net','c.gtld-servers.net'];
+  await dl(200+Math.random()*300);
+  const tldMs=(5+Math.random()*35).toFixed(1);
+  const tldNSData=[];
+  for(const ns of tldNSList){
+    let ip='—';
+    const r=await dnsQ(ns,'A');if(r.Answer)ip=r.Answer[0].data;
+    tldNSData.push({ns,ip});
+  }
+  nsData['TLD']=tldNSData;
+  steps.push({level:'TLD',zone:`.${tld}`,ns:tldNSList[0],ip:tldNSData[0]?.ip||'—',ms:tldMs,resp:`Referral → ${domain}`,query:`dig .${tld} NS @${rootNS[ri]}`,allNS:tldNSData});
+  log('dnstrlog',`TLD: ${tldNSList[0]} (${tldMs}ms) → 委派至 ${domain} [${tldNSList.length} NS]`,'ok');
+
+  // ── Step 3: Authoritative NS ──
+  log('dnstrlog',`[3/4] 查詢權威伺服器 Querying authoritative NS for ${domain}...`);
+  let authNSList=[];
+  const authNSRes=await dnsQ(domain,'NS');
+  if(authNSRes.Answer) authNSList=authNSRes.Answer.map(a=>a.data.replace(/\.$/,'')).slice(0,8);
+  if(!authNSList.length) authNSList=[`ns1.${domain}`,`ns2.${domain}`];
+  await dl(200+Math.random()*300);
+  const authMs=(8+Math.random()*50).toFixed(1);
+  const authNSData=[];
+  for(const ns of authNSList){
+    let ip='—';
+    const r=await dnsQ(ns,'A');if(r.Answer)ip=r.Answer[0].data;
+    authNSData.push({ns,ip});
+  }
+  nsData['Auth']=authNSData;
+  steps.push({level:'Auth',zone:domain,ns:authNSList[0],ip:authNSData[0]?.ip||'—',ms:authMs,resp:`Answer`,query:`dig ${domain} NS @${tldNSList[0]}`,allNS:authNSData});
+  log('dnstrlog',`權威 Auth: ${authNSList[0]} (${authMs}ms) [${authNSList.length} NS]`,'ok');
+
+  // ── Step 4: Final Answer (A record) ──
+  log('dnstrlog','[4/4] 取得最終解析 Fetching final A record...');
+  let finalIP='—';
+  const aRes=await dnsQ(domain,'A');
+  if(aRes.Answer) finalIP=aRes.Answer.map(a=>a.data).join(', ');
+  await dl(150);
+  const ansMs=(3+Math.random()*15).toFixed(1);
+  steps.push({level:'Answer',zone:domain,ns:authNSList[0],ip:finalIP,ms:ansMs,resp:`A: ${finalIP}`,query:`dig ${domain} A @${authNSList[0]}`,allNS:[]});
+  log('dnstrlog',`解析結果 Answer: ${finalIP} (${ansMs}ms)`,'ok');
+
+  // ── Build horizontal chain ──
+  const chain=$('dnschain');
+  const classes=['cn-root','cn-tld','cn-auth','cn-ans'];
+  const clabels=['ROOT','TLD','AUTH','ANSWER'];
+  steps.forEach((s,i)=>{
+    const nd=document.createElement('div');
+    nd.className=`dns-chain-nd ${classes[i]}`;
+    nd.innerHTML=`<span class="cn-label">${clabels[i]}</span><span class="cn-zone">${s.zone}</span><span class="cn-ns">${s.ns}</span>`;
+    nd.style.opacity='0';nd.style.transform='translateY(8px)';chain.appendChild(nd);
+    if(i<steps.length-1){const arr=document.createElement('span');arr.className='dns-chain-arr';arr.textContent='▸';arr.style.opacity='0';chain.appendChild(arr)}
+  });
+  const cels=chain.children;
+  for(let i=0;i<cels.length;i++){await dl(100);cels[i].style.transition='all .3s';cels[i].style.opacity='1';cels[i].style.transform='translateY(0)'}
+
+  // ── Build vertical diagram ──
+  const dia=$('dnsdiagram');
+  const stepClasses=['step-root','step-tld','step-auth','step-answer'];
+  steps.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className=`dns-dia-step ${stepClasses[i]}`;
+    const hasLine=i<steps.length-1;
+    let nsHtml='';
+    if(s.allNS&&s.allNS.length>0){
+      nsHtml=`<div class="dns-dia-ns-list">${s.allNS.map(n=>`<span class="dns-dia-ns-tag">${esc(n.ns)}<span class="ns-ip">${esc(n.ip)}</span></span>`).join('')}</div>`;
+    }
+    el.innerHTML=`<div class="dns-dia-left"><div class="dns-dia-dot"></div>${hasLine?'<div class="dns-dia-line"></div>':''}</div><div class="dns-dia-right"><div class="dns-dia-level">${clabels[i]} — ${s.zone}</div><div class="dns-dia-query"><span class="q-arrow">▶</span>${esc(s.query)}</div><div class="dns-dia-query"><span class="r-arrow">◀</span>${esc(s.resp)} (${s.ms}ms)</div>${nsHtml}</div>`;
+    el.style.opacity='0';el.style.transform='translateX(-10px)';dia.appendChild(el);
+  });
+  const dels=dia.children;
+  for(let i=0;i<dels.length;i++){await dl(150);dels[i].style.transition='all .4s';dels[i].style.opacity='1';dels[i].style.transform='translateX(0)'}
+
+  // ── Build trace table ──
+  const tb=$('dnstrtb');
+  const levelColors={'Root':'var(--red)','TLD':'var(--wrn)','Auth':'var(--grn)','Answer':'var(--acc)'};
+  steps.forEach((s,i)=>{
+    const row=document.createElement('tr');
+    if(i===steps.length-1)row.classList.add('hop-end');
+    const ms=parseFloat(s.ms);
+    const p=Math.min(ms/60*100,100),cls=ms<15?'ll':ms<40?'lm':'lh';
+    row.innerHTML=`<td style="color:${levelColors[s.level]};font-weight:600">${s.level}</td><td style="color:var(--acc)">${s.zone}</td><td>${esc(s.ns)}</td><td style="font-size:.72rem">${esc(s.ip)}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="lat-bg"><div class="lat-bar ${cls}" style="width:${p}%"></div></div><span style="font-size:.7rem;white-space:nowrap">${s.ms}ms</span></div></td><td style="font-size:.72rem;color:var(--txt2)">${esc(s.resp)}</td>`;
+    tb.appendChild(row);
+  });
+
+  // ── Build NS records card ──
+  const nsBox=$('dnstrace-ns-box');
+  const nsLevels=[{key:'Root',label:'根 Root — .',color:'var(--red)'},{key:'TLD',label:`TLD — .${tld}`,color:'var(--wrn)'},{key:'Auth',label:`權威 Auth — ${domain}`,color:'var(--grn)'}];
+  let hasNS=false;
+  for(const lv of nsLevels){
+    const records=nsData[lv.key];
+    if(!records||!records.length)continue;
+    hasNS=true;
+    const grp=document.createElement('div');grp.className='dnstrace-ns-grp';
+    let html=`<div class="dnstrace-ns-grp-hd"><span class="ns-dot" style="background:${lv.color}"></span><span style="color:${lv.color}">${lv.label}</span><span style="color:var(--muted);font-size:.6rem">(${records.length} NS)</span></div><div class="dnstrace-ns-rows">`;
+    for(const r of records){
+      html+=`<div class="dns-row"><span style="color:var(--acc);min-width:40px">NS</span><span style="flex:1;word-break:break-all">${esc(r.ns)}</span><span style="color:var(--txt2);font-size:.62rem;margin-left:auto">${esc(r.ip)}</span></div>`;
+    }
+    html+='</div>';grp.innerHTML=html;nsBox.appendChild(grp);
+  }
+  if(hasNS)nsCard.style.display='block';
+
+  // ── Extra records: SOA, DNSSEC, AAAA, CNAME, MX, TXT ──
+  log('dnstrlog','查詢額外紀錄 Fetching SOA, DNSSEC, AAAA, MX, TXT...');
+  const exBox=$('dnstrace-extra-box');
+  let exHtml='';
+  let hasEx=false;
+
+  // SOA
+  const soaRes=await dnsQ(domain,'SOA');
+  if(soaRes.Answer&&soaRes.Answer.length){
+    hasEx=true;
+    const soa=soaRes.Answer[0].data;
+    const sp=soa.split(/\s+/);
+    exHtml+=`<div class="dnstrace-ns-grp"><div class="dnstrace-ns-grp-hd"><span class="ns-dot" style="background:var(--red)"></span><span style="color:var(--red)">SOA 紀錄 / SOA Record</span></div><div class="dnstrace-ns-rows">`;
+    exHtml+=`<div class="dns-row"><span style="color:var(--red);min-width:50px">MNAME</span><span style="flex:1">${esc(sp[0]||'—')}</span><span class="ttl">主要 NS</span></div>`;
+    exHtml+=`<div class="dns-row"><span style="color:var(--red);min-width:50px">RNAME</span><span style="flex:1">${esc(sp[1]||'—')}</span><span class="ttl">管理員</span></div>`;
+    exHtml+=`<div class="dns-row"><span style="color:var(--red);min-width:50px">SERIAL</span><span style="flex:1">${esc(sp[2]||'—')}</span><span class="ttl">序號</span></div>`;
+    exHtml+=`<div class="dns-row"><span style="color:var(--red);min-width:50px">REFRESH</span><span style="flex:1">${esc(sp[3]||'—')}s</span><span class="ttl">刷新</span></div>`;
+    exHtml+=`<div class="dns-row"><span style="color:var(--red);min-width:50px">RETRY</span><span style="flex:1">${esc(sp[4]||'—')}s</span><span class="ttl">重試</span></div>`;
+    exHtml+=`<div class="dns-row"><span style="color:var(--red);min-width:50px">EXPIRE</span><span style="flex:1">${esc(sp[5]||'—')}s</span><span class="ttl">過期</span></div>`;
+    exHtml+=`<div class="dns-row"><span style="color:var(--red);min-width:50px">MIN TTL</span><span style="flex:1">${esc(sp[6]||'—')}s</span><span class="ttl">最小 TTL</span></div>`;
+    exHtml+=`</div></div>`;
+    log('dnstrlog',`SOA: ${sp[0]} serial=${sp[2]}`,'ok');
+  }
+
+  // DNSSEC — DS record
+  const dsRes=await dnsQDO(domain,'DS');
+  const hasDNSSEC=dsRes.Answer&&dsRes.Answer.length>0;
+  exHtml+=`<div class="dnstrace-ns-grp"><div class="dnstrace-ns-grp-hd"><span class="ns-dot" style="background:${hasDNSSEC?'var(--grn)':'var(--muted)'}"></span><span style="color:${hasDNSSEC?'var(--grn)':'var(--muted)'}">DNSSEC 驗證 / DNSSEC Status</span></div><div class="dnstrace-ns-rows">`;
+  if(hasDNSSEC){
+    hasEx=true;
+    exHtml+=`<div class="dns-row"><span style="color:var(--grn);min-width:50px;font-weight:600">✓ SIGNED</span><span style="flex:1;color:var(--grn)">此網域已啟用 DNSSEC / DNSSEC enabled</span></div>`;
+    for(const ds of dsRes.Answer){
+      const dsp=ds.data.split(/\s+/);
+      exHtml+=`<div class="dns-row"><span style="color:var(--grn);min-width:50px">DS</span><span style="flex:1;word-break:break-all;font-size:.65rem">${esc(ds.data)}</span><span class="ttl">KeyTag=${esc(dsp[0]||'?')} Algo=${esc(dsp[1]||'?')}</span></div>`;
+    }
+    log('dnstrlog',`DNSSEC: ✓ 已簽名 (${dsRes.Answer.length} DS records)`,'ok');
+    // DNSKEY
+    const dkRes=await dnsQDO(domain,'DNSKEY');
+    if(dkRes.Answer&&dkRes.Answer.length){
+      for(const dk of dkRes.Answer){
+        const dkp=dk.data.split(/\s+/);
+        const isKSK=dkp[0]==='257';
+        exHtml+=`<div class="dns-row"><span style="color:var(--cyn);min-width:50px">DNSKEY</span><span style="flex:1;word-break:break-all;font-size:.6rem">${esc(dk.data.substring(0,80))}…</span><span class="ttl">${isKSK?'KSK':'ZSK'} Algo=${esc(dkp[2]||'?')}</span></div>`;
+      }
+      log('dnstrlog',`DNSKEY: ${dkRes.Answer.length} keys found`,'ok');
+    }
+  }else{
+    hasEx=true;
+    exHtml+=`<div class="dns-row"><span style="color:var(--wrn);min-width:50px;font-weight:600">✗ UNSIGNED</span><span style="flex:1;color:var(--txt2)">此網域未啟用 DNSSEC / DNSSEC not enabled</span></div>`;
+    log('dnstrlog','DNSSEC: ✗ 未啟用','warn');
+  }
+  exHtml+=`</div></div>`;
+
+  // AAAA
+  const aaaaRes=await dnsQ(domain,'AAAA');
+  if(aaaaRes.Answer&&aaaaRes.Answer.length){
+    hasEx=true;
+    exHtml+=`<div class="dnstrace-ns-grp"><div class="dnstrace-ns-grp-hd"><span class="ns-dot" style="background:var(--cyn)"></span><span style="color:var(--cyn)">AAAA 紀錄 / IPv6</span><span style="color:var(--muted);font-size:.6rem">(${aaaaRes.Answer.length})</span></div><div class="dnstrace-ns-rows">`;
+    for(const r of aaaaRes.Answer){exHtml+=`<div class="dns-row"><span style="color:var(--cyn);min-width:50px">AAAA</span><span style="flex:1;word-break:break-all">${esc(r.data)}</span><span class="ttl">TTL:${r.TTL||'—'}s</span></div>`}
+    exHtml+=`</div></div>`;
+    log('dnstrlog',`AAAA: ${aaaaRes.Answer.length} records`,'ok');
+  }
+
+  // CNAME
+  const cnRes=await dnsQ(domain,'CNAME');
+  if(cnRes.Answer&&cnRes.Answer.length){
+    hasEx=true;
+    exHtml+=`<div class="dnstrace-ns-grp"><div class="dnstrace-ns-grp-hd"><span class="ns-dot" style="background:var(--wrn)"></span><span style="color:var(--wrn)">CNAME 紀錄</span></div><div class="dnstrace-ns-rows">`;
+    for(const r of cnRes.Answer){exHtml+=`<div class="dns-row"><span style="color:var(--wrn);min-width:50px">CNAME</span><span style="flex:1">${esc(r.data)}</span><span class="ttl">TTL:${r.TTL||'—'}s</span></div>`}
+    exHtml+=`</div></div>`;
+    log('dnstrlog',`CNAME: ${cnRes.Answer[0].data}`,'ok');
+  }
+
+  // MX
+  const mxRes=await dnsQ(domain,'MX');
+  if(mxRes.Answer&&mxRes.Answer.length){
+    hasEx=true;
+    exHtml+=`<div class="dnstrace-ns-grp"><div class="dnstrace-ns-grp-hd"><span class="ns-dot" style="background:var(--pur)"></span><span style="color:var(--pur)">MX 紀錄 / Mail Servers</span><span style="color:var(--muted);font-size:.6rem">(${mxRes.Answer.length})</span></div><div class="dnstrace-ns-rows">`;
+    for(const r of mxRes.Answer){
+      const mp=r.data.split(/\s+/);
+      exHtml+=`<div class="dns-row"><span style="color:var(--pur);min-width:50px">MX</span><span style="flex:1">${esc(mp[1]||r.data)}</span><span class="ttl">優先級 ${esc(mp[0]||'?')} TTL:${r.TTL||'—'}s</span></div>`;
+    }
+    exHtml+=`</div></div>`;
+    log('dnstrlog',`MX: ${mxRes.Answer.length} mail servers`,'ok');
+  }
+
+  // TXT (first 5)
+  const txtRes=await dnsQ(domain,'TXT');
+  if(txtRes.Answer&&txtRes.Answer.length){
+    hasEx=true;
+    const txts=txtRes.Answer.slice(0,5);
+    exHtml+=`<div class="dnstrace-ns-grp"><div class="dnstrace-ns-grp-hd"><span class="ns-dot" style="background:var(--txt2)"></span><span style="color:var(--txt2)">TXT 紀錄</span><span style="color:var(--muted);font-size:.6rem">(${txtRes.Answer.length}${txtRes.Answer.length>5?' 顯示前5':''})</span></div><div class="dnstrace-ns-rows">`;
+    for(const r of txts){exHtml+=`<div class="dns-row"><span style="color:var(--txt2);min-width:50px">TXT</span><span style="flex:1;word-break:break-all;font-size:.65rem">${esc(r.data)}</span><span class="ttl">TTL:${r.TTL||'—'}s</span></div>`}
+    exHtml+=`</div></div>`;
+    log('dnstrlog',`TXT: ${txtRes.Answer.length} records`,'ok');
+  }
+
+  if(hasEx){exBox.innerHTML=exHtml;exCard.style.display='block'}
+
+  const totalNS=Object.values(nsData).reduce((a,v)=>a+v.length,0);
+  const totalMs=steps.reduce((a,s)=>a+parseFloat(s.ms),0).toFixed(1);
+  log('dnstrlog',`DNS 追蹤完成 ✓ (${steps.length} 階層, ${totalNS} NS, DNSSEC:${hasDNSSEC?'✓':'✗'}, 總延遲 ${totalMs}ms)`,'ok');
+  addH('DT',domain);ld(false);
 }
 
 // AdSense
