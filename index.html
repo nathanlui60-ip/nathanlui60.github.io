@@ -8,13 +8,12 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1692670290595476"
-     crossorigin="anonymous"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#07080c;--panel:#0c0e14;--card:#10131b;--elev:#161a25;
-  --bdr:#1a1f2e;--txt:#d8dde8;--txt2:#8d95a8;--muted:#4f5872;
+  --bdr:#1a1f2e;--txt:#eef1f6;--txt2:#b0b8cc;--muted:#7a849e;
   --acc:#00ffc8;--accd:#00ffc830;--grn:#00e676;--cyn:#00e5ff;
   --red:#ff3860;--wrn:#ffb830;--inf:#3890ff;--pur:#b388ff;
   --mono:'JetBrains Mono','Share Tech Mono',monospace;
@@ -194,8 +193,42 @@ header{padding:22px 0 16px;border-bottom:1px solid var(--bdr);display:flex;align
 .hi .ht{font-size:.58rem;padding:2px 5px;border-radius:3px;background:var(--accd);color:var(--acc)}
 .no-h{font-family:var(--mono);font-size:.68rem;color:var(--muted);text-align:center;padding:16px 0}
 
+/* THREAT INTEL */
+.threat-score{display:flex;align-items:center;gap:20px;padding:16px 0}
+.threat-gauge{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--disp);font-size:1.6rem;font-weight:700;border:4px solid;position:relative}
+.threat-gauge::before{content:'';position:absolute;inset:6px;border-radius:50%;border:1px solid;opacity:.3}
+.tg-safe{border-color:var(--grn);color:var(--grn);background:rgba(0,230,118,.08);text-shadow:0 0 12px var(--grn)}.tg-safe::before{border-color:var(--grn)}
+.tg-low{border-color:var(--wrn);color:var(--wrn);background:rgba(255,184,48,.08);text-shadow:0 0 12px var(--wrn)}.tg-low::before{border-color:var(--wrn)}
+.tg-med{border-color:#ff9100;color:#ff9100;background:rgba(255,145,0,.08);text-shadow:0 0 12px #ff9100}.tg-med::before{border-color:#ff9100}
+.tg-high{border-color:var(--red);color:var(--red);background:rgba(255,56,96,.08);text-shadow:0 0 12px var(--red)}.tg-high::before{border-color:var(--red)}
+.threat-summary{flex:1}
+.threat-summary h4{font-family:var(--mono);font-size:.9rem;margin-bottom:6px}
+.threat-summary p{font-family:var(--mono);font-size:.72rem;color:var(--txt2);line-height:1.6}
+.threat-checks{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.tc-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg);border-radius:6px;border:1px solid var(--bdr);font-family:var(--mono);font-size:.74rem}
+.tc-icon{width:20px;text-align:center;flex-shrink:0;font-size:.9rem}
+.tc-name{flex:1;color:var(--txt2)}
+.tc-status{font-weight:600;font-size:.7rem;padding:3px 10px;border-radius:4px;letter-spacing:.5px}
+.tc-clean{background:rgba(0,230,118,.12);color:var(--grn);border:1px solid rgba(0,230,118,.3)}
+.tc-warn{background:rgba(255,184,48,.12);color:var(--wrn);border:1px solid rgba(255,184,48,.3)}
+.tc-bad{background:rgba(255,56,96,.12);color:var(--red);border:1px solid rgba(255,56,96,.3)}
+.tc-skip{background:rgba(122,132,158,.12);color:var(--muted);border:1px solid rgba(122,132,158,.3)}
+.tc-loading{color:var(--muted);font-style:italic}
+.threat-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.tl-btn{padding:8px 16px;font-family:var(--mono);font-size:.7rem;background:var(--card);border:1px solid var(--bdr);border-radius:6px;color:var(--txt2);cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.tl-btn:hover{border-color:var(--acc);color:var(--acc);box-shadow:0 0 10px var(--accd)}
+
 /* FOOTER */
 footer{border-top:1px solid var(--bdr);padding:18px 0;text-align:center;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+
+/* TRACE OPTIONS */
+.trace-opts{margin:-4px 0 12px;animation:fadeUp .3s ease}
+.trace-opts-inner{background:var(--panel);border:1px solid var(--bdr);border-radius:8px;padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.trace-opts-label{font-family:var(--mono);font-size:.68rem;color:var(--acc);letter-spacing:1px;font-weight:600;white-space:nowrap}
+.trace-opts-input{background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:8px 14px;font-family:var(--mono);font-size:.82rem;color:var(--txt);outline:none;transition:border .3s,box-shadow .3s;width:220px}
+.trace-opts-input:focus{border-color:var(--acc);box-shadow:0 0 12px var(--accd)}
+.trace-opts-input::placeholder{color:var(--muted);font-style:italic;font-size:.72rem}
+.trace-opts-hint{font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.5px}
 
 /* ANIMS */
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
@@ -231,8 +264,8 @@ footer{border-top:1px solid var(--bdr);padding:18px 0;text-align:center;font-fam
       <div class="qk-row">
         <span class="qk-label">快捷 //</span>
         <div id="qk-slots"></div>
-        <button class="qk qk-save" onclick="saveQK()" title="儲存目前輸入 Save current input">&#9733; SAVE</button>
         <button class="qk" onclick="myip()">我的 IP</button>
+        <button class="qk qk-save" onclick="saveQK()" title="儲存目前輸入 Save current input">&#9733; SAVE</button>
       </div>
     </div>
   </div>
@@ -240,19 +273,39 @@ footer{border-top:1px solid var(--bdr);padding:18px 0;text-align:center;font-fam
   <!-- ═══ TOOL TABS ═══ -->
   <div class="tab-bar">
     <button class="tab-btn on" data-t="ip" onclick="stab('ip')"><span class="ti">&#9678;</span>IP 查詢</button>
-    <button class="tab-btn" data-t="dns" onclick="stab('dns')"><span class="ti">&#9883;</span>DNS 紀錄</button>
     <button class="tab-btn" data-t="trace" onclick="stab('trace')"><span class="ti">&#9733;</span>路由追蹤</button>
-    <button class="tab-btn" data-t="aspath" onclick="stab('aspath')"><span class="ti">&#9741;</span>AS 路徑</button>
+    <button class="tab-btn" data-t="dns" onclick="stab('dns')"><span class="ti">&#9883;</span>DNS 紀錄</button>
     <button class="tab-btn" data-t="dnstrace" onclick="stab('dnstrace')"><span class="ti">&#9851;</span>DNS 追蹤</button>
+    <button class="tab-btn" data-t="aspath" onclick="stab('aspath')"><span class="ti">&#9741;</span>AS 路徑</button>
+    <button class="tab-btn" data-t="threat" onclick="stab('threat')"><span class="ti">&#9888;</span>威脅情報</button>
+  </div>
+
+  <!-- ═══ TRACE OPTIONS (Source IP) ═══ -->
+  <div class="trace-opts" id="trace-opts" style="display:none">
+    <div class="trace-opts-inner">
+      <span class="trace-opts-label">&#9654; SOURCE IP (自訂來源)</span>
+      <input type="text" class="trace-opts-input" id="trace-src-ip" placeholder="偵測中... // Detecting..." spellcheck="false" autocomplete="off">
+      <button class="btn-go" style="padding:8px 16px;font-size:.72rem" onclick="downloadTraceScript()">&#9660; 下載腳本</button>
+      <button class="btn-go" style="padding:8px 16px;font-size:.72rem;background:linear-gradient(135deg,var(--cyn),var(--inf))" onclick="copyTraceCmd()">&#9112; 複製命令</button>
+      <span class="trace-opts-hint">下載腳本雙擊執行，或複製命令貼到終端機</span>
+    </div>
   </div>
 
   <!-- ═══ RESULTS (directly below search + tabs) ═══ -->
 
   <!-- IP -->
   <div class="results-zone" id="r-ip">
+    <div class="card" id="domain-info" style="display:none">
+      <div class="card-hd"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span>網域資訊 / Domain Info</span></div>
+      <div id="domain-grid" class="info-grid"></div>
+      <div id="domain-ips" style="margin-top:12px"></div>
+    </div>
     <div class="card">
       <div class="card-hd"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>地理位置資訊 / Geolocation</span></div>
       <div class="info-grid" id="ipgrid"></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="1" y="3" width="22" height="18" rx="2"/><path d="M1 9h22"/></svg><span>地圖位置 / Map</span></div>
       <div id="mapbox"></div>
     </div>
     <div class="tlog" id="iplog"></div>
@@ -305,6 +358,27 @@ footer{border-top:1px solid var(--bdr);padding:18px 0;text-align:center;font-fam
       <div id="dnstrace-extra-box"></div>
     </div>
     <div class="tlog" id="dnstrlog"></div>
+  </div>
+
+  <!-- THREAT INTEL -->
+  <div class="results-zone" id="r-threat">
+    <div class="card">
+      <div class="card-hd"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M12 16h.01"/></svg><span>威脅情報總覽 / Threat Intelligence</span></div>
+      <div class="threat-score" id="threat-score"></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg><span>DNSBL 黑名單檢測 / Blacklist Check</span></div>
+      <div class="threat-checks" id="threat-dnsbl"></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg><span>VPN / Proxy / Tor 偵測</span></div>
+      <div class="threat-checks" id="threat-proxy"></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>外部情報平台 / External Intel</span></div>
+      <div class="threat-links" id="threat-links"></div>
+    </div>
+    <div class="tlog" id="threatlog"></div>
   </div>
 
   <!-- ═══ BOTTOM: history / system ═══ -->
@@ -384,17 +458,28 @@ function log(id,m,t='info'){
 function ld(on){const b=$('gobtn');b.classList.toggle('ld',on);b.disabled=on}
 
 // Tabs
+let _deviceIP='';
+async function _fetchDeviceIP(){
+  if(_deviceIP)return _deviceIP;
+  try{const r=await fetch('/api/myip');const d=await r.json();_deviceIP=d.ip;return _deviceIP}catch(e){
+    try{const r2=await fetch('https://api.ipify.org?format=json');const d2=await r2.json();_deviceIP=d2.ip;return _deviceIP}catch(e2){return''}
+  }
+}
 function stab(t){
   ctab=t;
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
-  ['ip','dns','trace','aspath','dnstrace'].forEach(k=>$('r-'+k).classList.remove('vis'));
+  ['ip','dns','trace','aspath','dnstrace','threat'].forEach(k=>$('r-'+k).classList.remove('vis'));
+  $('trace-opts').style.display=t==='trace'?'block':'none';
+  if(t==='trace'&&!$('trace-src-ip').value){
+    _fetchDeviceIP().then(ip=>{if(ip&&!$('trace-src-ip').value)$('trace-src-ip').value=ip});
+  }
 }
 
 // Execute
 function exec(){
   const v=$('q').value.trim();
   if(!v){$('q').focus();return}
-  ({ip:doIP,dns:doDNS,trace:doTrace,aspath:doAS,dnstrace:doDNStrace})[ctab](v);
+  ({ip:doIP,dns:doDNS,trace:doTrace,aspath:doAS,dnstrace:doDNStrace,threat:doThreat})[ctab](v);
 }
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter')exec()});
 
@@ -403,63 +488,214 @@ function addH(type,q){
   hist.unshift({type,q,time:new Date()});
   if(hist.length>20)hist.pop();
   const ul=$('hlist');
-  const labels={IP:'IP',DNS:'DNS',TR:'TR',AS:'AS',DT:'DT'};
+  const labels={IP:'IP',DNS:'DNS',TR:'TR',AS:'AS',DT:'DT',TH:'TH'};
   ul.innerHTML=hist.map(h=>{
     const t=h.time.toLocaleTimeString('en-GB',{hour12:false,hour:'2-digit',minute:'2-digit'});
-    return`<li class="hi" onclick="stab('${({IP:'ip',DNS:'dns',TR:'trace',AS:'aspath',DT:'dnstrace'})[h.type]}');$('q').value='${h.q}';exec()"><span class="ht">${labels[h.type]}</span><span>${h.q}</span><span style="margin-left:auto;color:var(--muted);font-size:.58rem">${t}</span></li>`;
+    return`<li class="hi" onclick="stab('${({IP:'ip',DNS:'dns',TR:'trace',AS:'aspath',DT:'dnstrace',TH:'threat'})[h.type]}');$('q').value='${h.q}';exec()"><span class="ht">${labels[h.type]}</span><span>${h.q}</span><span style="margin-left:auto;color:var(--muted);font-size:.58rem">${t}</span></li>`;
   }).join('');
 }
 
 // My IP
 async function myip(){
   ld(true);
-  try{const r=await fetch('https://api.ipify.org?format=json');const d=await r.json();$('q').value=d.ip;ld(false);if(ctab==='ip')exec()}
+  try{const ip=await _fetchDeviceIP();if(ip){$('q').value=ip;ld(false);if(ctab==='ip')exec()}else{ld(false)}}
   catch(e){ld(false)}
 }
 
-// ═══ 1) IP LOOKUP ═══
-async function doIP(ip){
+// ═══ 1) IP LOOKUP (supports domain with enhanced info) ═══
+async function doIP(input){
   ld(true);$('iplog').innerHTML='';$('r-ip').classList.add('vis');
+  const _di=$('domain-info');if(_di)_di.style.display='none';
+  let ip=input, domainName='';
+  // Fixed: proper IP detection that won't misidentify short domains as IPv6
+  const isIPv4=/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(input);
+  const isIPv6=/^[0-9a-fA-F]*:[0-9a-fA-F:]+$/.test(input);
+  const isIP=isIPv4||isIPv6;
+  if(!isIP){
+    domainName=input.replace(/^https?:\/\//,'').replace(/\/.*$/,'').trim();
+    log('iplog',`偵測到網域 Domain detected: ${domainName}，解析中...`);
+    // Fetch ALL A and AAAA records
+    let allIPs=[];
+    try{
+      const [rA,rAAAA]=await Promise.allSettled([
+        fetch(`https://dns.google/resolve?name=${encodeURIComponent(domainName)}&type=A`).then(r=>r.json()),
+        fetch(`https://dns.google/resolve?name=${encodeURIComponent(domainName)}&type=AAAA`).then(r=>r.json())
+      ]);
+      if(rA.status==='fulfilled'&&rA.value.Answer){
+        rA.value.Answer.forEach(a=>{if(a.type===1)allIPs.push({ip:a.data,type:'A'})});
+      }
+      if(rAAAA.status==='fulfilled'&&rAAAA.value.Answer){
+        rAAAA.value.Answer.forEach(a=>{if(a.type===28)allIPs.push({ip:a.data,type:'AAAA'})});
+      }
+      if(allIPs.length){
+        ip=allIPs[0].ip;
+        log('iplog',`DNS 解析成功: ${domainName} → ${allIPs.map(r=>r.ip).join(', ')}`,'ok');
+      }else{
+        log('iplog',`無法解析 ${domainName} (無 A/AAAA 紀錄)，嘗試直接查詢...`,'warn');
+        ip=domainName;
+      }
+    }catch(e){
+      log('iplog',`DNS 解析失敗: ${e.message}，嘗試直接查詢...`,'warn');
+      ip=domainName;
+    }
+    // Fetch RDAP/WHOIS domain info in background
+    _fetchDomainInfo(domainName,allIPs);
+  }
   log('iplog',`發起查詢 Initiating lookup for ${ip}...`);
   try{
-    // Try primary API
     let d;
+    // Try API 1: ipwho.is
     try{
       const r=await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`);
       d=await r.json();
       if(!d.success) throw new Error(d.message||'fail');
     }catch(e1){
-      // Fallback
-      log('iplog',`主 API 失敗，嘗試備用 Trying fallback...`,'warn');
-      const r2=await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`);
-      const d2=await r2.json();
-      if(d2.error) throw new Error(d2.reason||'fail');
-      d={success:true,ip:d2.ip,country:d2.country_name,country_code:d2.country_code,continent:d2.continent_code,
-        region:d2.region,region_code:d2.region_code,city:d2.city,postal:d2.postal,
-        latitude:d2.latitude,longitude:d2.longitude,
-        timezone:{id:d2.timezone},
-        connection:{isp:d2.org,org:d2.org,asn:d2.asn}};
+      log('iplog',`API-1 失敗，嘗試備用...`,'warn');
+      // Try API 2: ipapi.co
+      try{
+        const r2=await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`);
+        const d2=await r2.json();
+        if(d2.error) throw new Error(d2.reason||'fail');
+        d={success:true,ip:d2.ip,country:d2.country_name,country_code:d2.country_code,continent:d2.continent_code,
+          region:d2.region,region_code:d2.region_code,city:d2.city,postal:d2.postal,
+          latitude:d2.latitude,longitude:d2.longitude,
+          timezone:{id:d2.timezone},
+          connection:{isp:d2.org,org:d2.org,asn:d2.asn}};
+      }catch(e2){
+        log('iplog',`API-2 失敗，嘗試第三備用...`,'warn');
+        // Try API 3: ipinfo.io
+        const r3=await fetch(`https://ipinfo.io/${encodeURIComponent(ip)}/json`);
+        const d3=await r3.json();
+        if(d3.bogon||d3.error) throw new Error(d3.error?.message||'bogon/fail');
+        const [lat3,lon3]=(d3.loc||'0,0').split(',').map(Number);
+        d={success:true,ip:d3.ip,country:d3.country||'N/A',country_code:d3.country||'',continent:'N/A',
+          region:d3.region||'N/A',region_code:'',city:d3.city||'N/A',postal:d3.postal||'',
+          latitude:lat3,longitude:lon3,
+          timezone:{id:d3.timezone||'N/A'},
+          connection:{isp:d3.org||'N/A',org:d3.org||'N/A',asn:''}};
+      }
     }
     log('iplog',`收到回應 Response: ${d.country} (${d.country_code})`,'ok');
     log('iplog',`ISP: ${d.connection?.isp||'N/A'}`,'ok');
     log('iplog',`座標: ${d.latitude}, ${d.longitude}`,'ok');
     const asn=d.connection?`${d.connection.asn||''} ${d.connection.org||''}`:'N/A';
-    const f=[
+    const f=[];
+    if(domainName) f.push(['查詢網域 Domain',domainName,0]);
+    f.push(
       ['IP 位址',d.ip,1],['國家',`${d.country} (${d.country_code})`,0],
       ['洲',d.continent||'N/A',0],['地區',`${d.region} (${d.region_code||''})`,0],
       ['城市',d.city||'N/A',0],['郵遞區號',d.postal||'N/A',0],
       ['時區',d.timezone?.id||'N/A',0],['緯度',d.latitude,1],
       ['經度',d.longitude,1],['ISP',d.connection?.isp||'N/A',0],
       ['組織',d.connection?.org||'N/A',0],['AS',asn,0],
-    ];
+    );
     $('ipgrid').innerHTML=f.map(([l,v,h])=>
-      `<div class="info-item"><div class="info-label">${l}</div><div class="info-val${h?' hl':''}">${v}</div></div>`
+      `<div class="info-item"><div class="info-label">${l}</div><div class="info-val${h?' hl':''}">${esc(v)}</div></div>`
     ).join('');
     showMap(d.latitude,d.longitude,d.city||'',d.country||'',d.ip);
-    addH('IP',ip);
+    addH('IP',input);
     log('iplog','查詢完成 ✓','ok');
   }catch(e){log('iplog',`錯誤: ${e.message}`,'err')}
   ld(false);
+}
+
+// Domain RDAP/WHOIS info + all IPs display
+// TLD-specific RDAP servers for regions not covered by rdap.org
+const _rdapServers={
+  'hk':'https://rdap.hkirc.hk/rdap/domain/','tw':'https://twnic.tw/rdap/domain/',
+  'jp':'https://jprs.jp/rdap/domain/','kr':'https://rdap.kisa.or.kr/rdap/domain/',
+  'cn':'https://rdap.cnnic.cn/rdap/domain/','au':'https://rdap.auda.org.au/domain/',
+  'nz':'https://rdap.nzrs.net.nz/domain/','uk':'https://rdap.nominet.uk/uk/domain/',
+  'de':'https://rdap.denic.de/domain/','br':'https://rdap.registro.br/domain/',
+  'ru':'https://rdap.tcinet.ru/domain/','fr':'https://rdap.nic.fr/domain/',
+};
+function _getRdapUrl(domain){
+  // Extract effective TLD (handles .com.hk, .co.uk etc.)
+  const parts=domain.split('.');
+  if(parts.length>=3){
+    const cc=parts[parts.length-1];
+    if(_rdapServers[cc]) return _rdapServers[cc]+encodeURIComponent(domain);
+  }
+  const tld=parts[parts.length-1];
+  if(_rdapServers[tld]) return _rdapServers[tld]+encodeURIComponent(domain);
+  return null;
+}
+async function _fetchDomainInfo(domain,allIPs){
+  try{
+    const domBox=$('domain-info');
+    domBox.style.display='block';
+    // Show all resolved IPs
+    const ipsEl=$('domain-ips');
+    if(allIPs&&allIPs.length>1){
+      ipsEl.innerHTML=`<div style="margin-bottom:8px;font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:1px">所有解析 IP / ALL RESOLVED IPs</div>`+
+        allIPs.map(r=>`<div class="dns-row"><span class="dns-badge dns-${r.type}">${r.type}</span><span style="color:var(--acc)">${esc(r.ip)}</span></div>`).join('');
+    }else if(allIPs&&allIPs.length===1){
+      ipsEl.innerHTML=`<div class="dns-row"><span class="dns-badge dns-${allIPs[0].type}">${allIPs[0].type}</span><span style="color:var(--acc)">${esc(allIPs[0].ip)}</span></div>`;
+    }else{
+      ipsEl.innerHTML='';
+    }
+    // RDAP lookup: try rdap.org first, then TLD-specific server
+    const grid=$('domain-grid');
+    grid.innerHTML='<div class="info-item"><div class="info-label">RDAP</div><div class="info-val" style="color:var(--muted)">查詢中...</div></div>';
+    let d=null;
+    // Attempt 1: rdap.org
+    try{
+      const r=await fetch(`https://rdap.org/domain/${encodeURIComponent(domain)}`);
+      if(!r.ok) throw new Error(`HTTP ${r.status}`);
+      d=await r.json();
+    }catch(e1){
+      log('iplog',`RDAP 主查詢失敗 (${e1.message})，嘗試備用...`,'warn');
+      // Attempt 2: TLD-specific RDAP
+      const altUrl=_getRdapUrl(domain);
+      if(altUrl){
+        try{
+          const r2=await fetch(altUrl);
+          if(!r2.ok) throw new Error(`HTTP ${r2.status}`);
+          d=await r2.json();
+        }catch(e2){
+          log('iplog',`RDAP 備用查詢也失敗 (${e2.message})`,'warn');
+        }
+      }
+    }
+    if(!d){
+      // Show basic domain info even without RDAP
+      grid.innerHTML=[
+        ['網域名稱 Domain',domain,1],
+        ['RDAP','此 TLD 暫不支援 RDAP 查詢',0]
+      ].map(([l,v,h])=>`<div class="info-item"><div class="info-label">${l}</div><div class="info-val${h?' hl':''}">${esc(v)}</div></div>`).join('');
+      return;
+    }
+    const info=[];
+    info.push(['網域名稱 Domain',d.ldhName||domain,1]);
+    if(d.status&&d.status.length) info.push(['狀態 Status',d.status.slice(0,3).join(', '),0]);
+    const registrar=d.entities?.find(e=>e.roles?.includes('registrar'));
+    if(registrar){
+      const rName=registrar.vcardArray?.[1]?.find(v=>v[0]==='fn')?.[3]||registrar.handle||'N/A';
+      info.push(['註冊商 Registrar',rName,0]);
+    }
+    if(d.events){
+      const reg=d.events.find(e=>e.eventAction==='registration');
+      const exp=d.events.find(e=>e.eventAction==='expiration');
+      const upd=d.events.find(e=>e.eventAction==='last changed');
+      if(reg) info.push(['註冊日期 Registered',reg.eventDate.split('T')[0],0]);
+      if(exp) info.push(['到期日期 Expires',exp.eventDate.split('T')[0],0]);
+      if(upd) info.push(['更新日期 Updated',upd.eventDate.split('T')[0],0]);
+    }
+    if(d.nameservers&&d.nameservers.length){
+      info.push(['名稱伺服器 NS',d.nameservers.map(n=>n.ldhName).join(', '),0]);
+    }
+    if(d.secureDNS){
+      info.push(['DNSSEC',d.secureDNS.delegationSigned?'已簽署 Signed':'未簽署 Unsigned',0]);
+    }
+    grid.innerHTML=info.map(([l,v,h])=>
+      `<div class="info-item"><div class="info-label">${l}</div><div class="info-val${h?' hl':''}">${esc(v)}</div></div>`
+    ).join('');
+    log('iplog',`RDAP 網域資訊載入完成`,'ok');
+  }catch(e){
+    const grid=$('domain-grid');
+    if(grid) grid.innerHTML=`<div class="info-item"><div class="info-label">RDAP</div><div class="info-val" style="color:var(--wrn)">無法取得 (${esc(e.message)})</div></div>`;
+    log('iplog',`RDAP 查詢失敗: ${e.message}`,'warn');
+  }
 }
 
 function showMap(lat,lon,city,country,ip){
@@ -503,25 +739,111 @@ async function doDNS(domain){
 }
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
-// ═══ 3) TRACEROUTE ═══
+// ═══ 3) TRACEROUTE (Real via local backend SSE + Simulated Fallback) ═══
 async function doTrace(target){
   ld(true);$('trlog').innerHTML='';$('trtb').innerHTML='';$('r-trace').classList.add('vis');
-  log('trlog',`路由追蹤 → ${target}...`);
-  const n=8+Math.floor(Math.random()*8),hops=mkHops(n,target);
-  for(let i=0;i<hops.length;i++){
-    const h=hops[i];await dl(250+Math.random()*300);
-    const row=document.createElement('tr');
-    if(h.to)row.classList.add('to');
-    if(i===hops.length-1)row.classList.add('hop-end');
-    const p=Math.min(h.ms/300*100,100),cls=h.ms<50?'ll':h.ms<120?'lm':'lh';
-    row.innerHTML=`<td><span class="hop-n">${h.hop}</span></td><td style="color:${h.to?'var(--muted)':'var(--acc)'}">${h.ip}</td><td>${h.host}</td><td>${h.to?'* * *':h.ms.toFixed(1)+' ms'}</td><td><div class="lat-bg"><div class="lat-bar ${h.to?'':cls}" style="width:${h.to?0:p}%"></div></div></td><td>${h.loc}</td>`;
-    $('trtb').appendChild(row);
-    h.to?log('trlog',`Hop ${h.hop}: timeout`,'warn'):log('trlog',`Hop ${h.hop}: ${h.ip} (${h.ms.toFixed(1)}ms) ${h.loc}`,'ok');
+  let srcIP=$('trace-src-ip').value.trim();
+  if(!srcIP){
+    srcIP=await _fetchDeviceIP();
+    if(srcIP) $('trace-src-ip').value=srcIP;
   }
-  log('trlog',`完成 — ${hops.length} hops ✓`,'ok');
+  if(srcIP) log('trlog',`來源 Device IP: ${srcIP}`);
+  // Resolve domain to IP if needed
+  let targetIP=target;
+  const isIP=/^\d+\.\d+\.\d+\.\d+$/.test(target)||/^[0-9a-fA-F:]+$/.test(target);
+  if(!isIP){
+    const domain=target.replace(/^https?:\/\//,'').replace(/\/.*$/,'').trim();
+    log('trlog',`解析網域 Resolving ${domain}...`);
+    try{
+      const r=await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=A`);
+      const d=await r.json();
+      if(d.Answer&&d.Answer.length){
+        targetIP=d.Answer[0].data;
+        log('trlog',`DNS: ${domain} → ${targetIP}`,'ok');
+      }else{
+        log('trlog',`無法解析 ${domain}，使用原始輸入`,'warn');
+      }
+    }catch(e){
+      log('trlog',`DNS 解析失敗: ${e.message}`,'warn');
+    }
+  }
+  log('trlog',`路由追蹤 → ${targetIP} (from device)...`);
+  // Try real backend SSE first, fall back to simulation
+  try{
+    await _realTraceSSE(targetIP,srcIP);
+  }catch(e){
+    log('trlog',`本機後端不可用 (${e.message})，使用模擬 Simulated fallback`,'warn');
+    await _simulatedTrace(targetIP,srcIP);
+  }
   addH('TR',target);ld(false);
 }
-function mkHops(n,t){
+
+// Real traceroute via local Node.js backend (SSE streaming)
+function _realTraceSSE(targetIP,srcIP){
+  return new Promise((resolve,reject)=>{
+    let hopCount=0;
+    // Add Hop 0: device source IP
+    if(srcIP){
+      _addHopRow({hop:0,ip:srcIP,host:srcIP,ms:0.1,loc:'Device (Source)',to:false,src:true});
+      log('trlog',`Hop 0: ${srcIP} [DEVICE SOURCE]`,'ok');
+    }
+    let es;
+    try{
+      es=new EventSource(`/api/trace?target=${encodeURIComponent(targetIP)}`);
+    }catch(e){
+      reject(new Error('EventSource failed'));return;
+    }
+    const timeout=setTimeout(()=>{es.close();reject(new Error('timeout'))},60000);
+    es.onmessage=function(ev){
+      try{
+        const d=JSON.parse(ev.data);
+        if(d.done){
+          clearTimeout(timeout);es.close();
+          log('trlog',`完成 — ${hopCount+(srcIP?1:0)} hops (real traceroute from device) ✓`,'ok');
+          resolve();return;
+        }
+        hopCount++;
+        const hopNum=d.hop+(srcIP?1:0);
+        if(d.timeout){
+          _addHopRow({hop:hopNum,ip:'* * *',host:'—',ms:0,loc:'—',to:true,src:false});
+          log('trlog',`Hop ${hopNum}: timeout`,'warn');
+        }else{
+          _addHopRow({hop:hopNum,ip:d.ip||'?',host:d.host||d.ip||'?',ms:d.ms||0,loc:'',to:false,src:false});
+          log('trlog',`Hop ${hopNum}: ${d.ip} (${(d.ms||0).toFixed(1)}ms) ${d.host||''}`,'ok');
+        }
+      }catch(e){}
+    };
+    es.onerror=function(){
+      clearTimeout(timeout);es.close();
+      if(hopCount===0) reject(new Error('SSE connection failed'));
+      else{log('trlog','連線中斷','warn');resolve();}
+    };
+  });
+}
+
+// Add a single hop row to the trace table
+function _addHopRow(h){
+  const row=document.createElement('tr');
+  if(h.to)row.classList.add('to');
+  const isSrc=h.src;
+  const p=Math.min(h.ms/300*100,100),cls=h.ms<50?'ll':h.ms<120?'lm':'lh';
+  row.innerHTML=`<td><span class="hop-n">${h.hop}</span></td><td style="color:${isSrc?'var(--grn)':h.to?'var(--muted)':'var(--acc)'}">${h.ip}${isSrc?' <span style="font-size:.58rem;color:var(--grn)">(SRC)</span>':''}</td><td>${h.host}</td><td>${h.to?'* * *':h.ms.toFixed(1)+' ms'}</td><td><div class="lat-bg"><div class="lat-bar ${h.to?'':cls}" style="width:${h.to?0:p}%"></div></div></td><td>${h.loc}</td>`;
+  $('trtb').appendChild(row);
+}
+
+// Simulated fallback (when backend not running)
+async function _simulatedTrace(targetIP,srcIP){
+  const n=8+Math.floor(Math.random()*8);
+  const hops=mkHops(n,targetIP,srcIP);
+  for(let i=0;i<hops.length;i++){
+    const h=hops[i];await dl(180+Math.random()*220);
+    _addHopRow(h);
+    h.to?log('trlog',`Hop ${h.hop}: timeout`,'warn'):log('trlog',`Hop ${h.hop}: ${h.ip} (${h.ms.toFixed(1)}ms) ${h.loc}${h.src?' [SOURCE]':''}`,'ok');
+  }
+  log('trlog',`完成 — ${hops.length} hops (simulated) ✓`,'ok');
+}
+
+function mkHops(n,t,srcIP){
   const gw=[
     {ip:'192.168.1.1',host:'gateway.local',loc:'Local',ms:[.5,3]},
     {ip:'10.0.0.1',host:'core-rtr.isp.net',loc:'ISP',ms:[2,8]},
@@ -536,12 +858,240 @@ function mkHops(n,t){
     {ip:'198.41.208.131',host:'dns1.nsone.net',loc:'New York',ms:[90,180]},
   ];
   const h=[],s=[...gw].sort(()=>Math.random()-.5);
+  let hopNum=0;
+  if(srcIP){
+    hopNum++;
+    h.push({hop:0,ip:srcIP,host:srcIP,ms:0.1+Math.random()*0.5,loc:'Source',to:false,src:true});
+  }
   for(let i=0;i<n;i++){
-    if(Math.random()<.1&&i>1&&i<n-1){h.push({hop:i+1,ip:'* * *',host:'—',ms:0,loc:'—',to:true});continue}
-    if(i===n-1){h.push({hop:i+1,ip:t,host:t,ms:20+Math.random()*200,loc:'Target',to:false});continue}
-    const g=s[i%s.length];h.push({hop:i+1,ip:g.ip,host:g.host,ms:g.ms[0]+Math.random()*(g.ms[1]-g.ms[0])+i*2,loc:g.loc,to:false});
+    if(Math.random()<.1&&i>1&&i<n-1){h.push({hop:hopNum+i+1,ip:'* * *',host:'—',ms:0,loc:'—',to:true});continue}
+    if(i===n-1){h.push({hop:hopNum+i+1,ip:t,host:t,ms:20+Math.random()*200,loc:'Target',to:false});continue}
+    const g=s[i%s.length];h.push({hop:hopNum+i+1,ip:g.ip,host:g.host,ms:g.ms[0]+Math.random()*(g.ms[1]-g.ms[0])+i*2,loc:g.loc,to:false});
   }
   return h;
+}
+
+// ═══ 6) THREAT INTELLIGENCE ═══
+const _dnsbls=[
+  {name:'Spamhaus ZEN',host:'zen.spamhaus.org'},
+  {name:'SpamCop',host:'bl.spamcop.net'},
+  {name:'Barracuda',host:'b.barracudacentral.org'},
+  {name:'SORBS',host:'dnsbl.sorbs.net'},
+  {name:'UCEPROTECT L1',host:'dnsbl-1.uceprotect.net'},
+  {name:'Composite BL',host:'cbl.abuseat.org'},
+  {name:'SpamRATS',host:'noptr.spamrats.com'},
+  {name:'JustSpam',host:'dnsbl.justspam.org'},
+];
+async function doThreat(input){
+  ld(true);$('threatlog').innerHTML='';$('threat-score').innerHTML='';
+  $('threat-dnsbl').innerHTML='';$('threat-proxy').innerHTML='';$('threat-links').innerHTML='';
+  $('r-threat').classList.add('vis');
+  // Resolve to IP if domain
+  let ip=input;
+  const isIPv4=/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(input);
+  const isIPv6=/^[0-9a-fA-F]*:[0-9a-fA-F:]+$/.test(input);
+  if(!isIPv4&&!isIPv6){
+    const domain=input.replace(/^https?:\/\//,'').replace(/\/.*$/,'').trim();
+    log('threatlog',`解析 ${domain}...`);
+    try{
+      const r=await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=A`);
+      const d=await r.json();
+      if(d.Answer&&d.Answer.length){ip=d.Answer.find(a=>a.type===1)?.data||d.Answer[0].data;log('threatlog',`${domain} → ${ip}`,'ok')}
+      else{log('threatlog',`無法解析 ${domain}`,'err');ld(false);return}
+    }catch(e){log('threatlog',`DNS 失敗: ${e.message}`,'err');ld(false);return}
+  }
+  log('threatlog',`威脅情報查詢 → ${ip}...`);
+  // Show loading
+  $('threat-score').innerHTML='<div style="padding:16px;font-family:var(--mono);font-size:.78rem;color:var(--muted)">分析中 Analyzing...</div>';
+  // Run all checks in parallel
+  const [dnsblResults,proxyResult]=await Promise.allSettled([
+    _checkDNSBLs(ip),
+    _checkProxy(ip)
+  ]);
+  const dnsbl=dnsblResults.status==='fulfilled'?dnsblResults.value:{listed:[],total:0,checked:0};
+  const proxy=proxyResult.status==='fulfilled'?proxyResult.value:{vpn:false,proxy:false,tor:false,hosting:false,error:null};
+  // Render DNSBL results
+  _renderDNSBL(dnsbl);
+  // Render Proxy results
+  _renderProxy(proxy);
+  // Calculate threat score
+  _renderThreatScore(ip,dnsbl,proxy);
+  // External links
+  _renderThreatLinks(ip);
+  addH('TH',input);ld(false);
+}
+
+// DNSBL check via Google DNS
+async function _checkDNSBLs(ip){
+  const parts=ip.split('.');
+  if(parts.length!==4) return{listed:[],total:_dnsbls.length,checked:0};
+  const rev=parts.reverse().join('.');
+  const results=[];
+  const checks=_dnsbls.map(async bl=>{
+    try{
+      const r=await fetch(`https://dns.google/resolve?name=${rev}.${bl.host}&type=A`);
+      const d=await r.json();
+      const listed=!!(d.Answer&&d.Answer.length);
+      results.push({name:bl.name,host:bl.host,listed,code:listed?d.Answer[0].data:null});
+      log('threatlog',`${bl.name}: ${listed?'已列入 LISTED':'乾淨 CLEAN'}`,listed?'err':'ok');
+    }catch(e){
+      results.push({name:bl.name,host:bl.host,listed:false,code:null,error:true});
+    }
+  });
+  await Promise.allSettled(checks);
+  return{listed:results.filter(r=>r.listed),total:_dnsbls.length,checked:results.length,results};
+}
+
+// VPN/Proxy/Tor check via proxycheck.io
+async function _checkProxy(ip){
+  try{
+    const r=await fetch(`https://proxycheck.io/v2/${encodeURIComponent(ip)}?vpn=1&asn=1&risk=1`);
+    const d=await r.json();
+    if(d.status==='ok'&&d[ip]){
+      const info=d[ip];
+      const result={
+        vpn:info.vpn==='yes',proxy:info.proxy==='yes',
+        tor:info.type==='TOR'||info.type==='Tor',
+        hosting:info.type==='Hosting'||info.type==='hosting',
+        type:info.type||'N/A',risk:parseInt(info.risk)||0,
+        provider:info.provider||'',asn:info.asn||'',org:info.organisation||''
+      };
+      log('threatlog',`Proxy偵測: VPN=${result.vpn} Proxy=${result.proxy} Tor=${result.tor} Risk=${result.risk}`,'ok');
+      return result;
+    }
+    throw new Error(d.message||'unknown');
+  }catch(e){
+    log('threatlog',`Proxy偵測失敗: ${e.message}`,'warn');
+    return{vpn:false,proxy:false,tor:false,hosting:false,error:e.message};
+  }
+}
+
+function _renderDNSBL(dnsbl){
+  const el=$('threat-dnsbl');
+  if(!dnsbl.results||!dnsbl.results.length){
+    el.innerHTML='<div class="tc-row"><span class="tc-icon">—</span><span class="tc-name">無法檢測 (僅支援 IPv4)</span><span class="tc-status tc-skip">SKIP</span></div>';
+    return;
+  }
+  el.innerHTML=dnsbl.results.map(r=>{
+    const icon=r.error?'&#9898;':r.listed?'&#9888;':'&#9989;';
+    const cls=r.error?'tc-skip':r.listed?'tc-bad':'tc-clean';
+    const label=r.error?'ERROR':r.listed?'LISTED':'CLEAN';
+    return`<div class="tc-row"><span class="tc-icon">${icon}</span><span class="tc-name">${esc(r.name)} <span style="color:var(--muted);font-size:.6rem">${esc(r.host)}</span></span><span class="tc-status ${cls}">${label}${r.code?' ('+esc(r.code)+')':''}</span></div>`;
+  }).join('');
+}
+
+function _renderProxy(proxy){
+  const el=$('threat-proxy');
+  if(proxy.error){
+    el.innerHTML=`<div class="tc-row"><span class="tc-icon">&#9898;</span><span class="tc-name">proxycheck.io</span><span class="tc-status tc-skip">查詢失敗</span></div>`;
+    return;
+  }
+  const rows=[
+    {label:'VPN',val:proxy.vpn,icon:proxy.vpn?'&#128272;':'&#9989;'},
+    {label:'Proxy',val:proxy.proxy,icon:proxy.proxy?'&#128272;':'&#9989;'},
+    {label:'Tor Exit Node',val:proxy.tor,icon:proxy.tor?'&#128272;':'&#9989;'},
+    {label:'Hosting / 資料中心',val:proxy.hosting,icon:proxy.hosting?'&#127959;':'&#9989;'},
+  ];
+  let html=rows.map(r=>{
+    const cls=r.val?'tc-warn':'tc-clean';
+    const label=r.val?'DETECTED':'CLEAN';
+    return`<div class="tc-row"><span class="tc-icon">${r.icon}</span><span class="tc-name">${r.label}</span><span class="tc-status ${cls}">${label}</span></div>`;
+  }).join('');
+  if(proxy.type) html+=`<div class="tc-row"><span class="tc-icon">&#128196;</span><span class="tc-name">連線類型 Type</span><span class="tc-status tc-skip">${esc(proxy.type)}</span></div>`;
+  if(proxy.risk!==undefined) html+=`<div class="tc-row"><span class="tc-icon">&#9888;</span><span class="tc-name">風險分數 Risk Score</span><span class="tc-status ${proxy.risk>50?'tc-bad':proxy.risk>20?'tc-warn':'tc-clean'}">${proxy.risk}/100</span></div>`;
+  if(proxy.provider) html+=`<div class="tc-row"><span class="tc-icon">&#127968;</span><span class="tc-name">供應商 Provider</span><span class="tc-status tc-skip">${esc(proxy.provider)}</span></div>`;
+  el.innerHTML=html;
+}
+
+function _renderThreatScore(ip,dnsbl,proxy){
+  let score=0, maxScore=100;
+  // DNSBL contribution (up to 60 points)
+  const listedCount=dnsbl.listed?dnsbl.listed.length:0;
+  score+=Math.min(listedCount*15,60);
+  // Proxy contribution (up to 40 points)
+  if(proxy.tor) score+=30;
+  else if(proxy.vpn) score+=15;
+  else if(proxy.proxy) score+=20;
+  if(proxy.hosting) score+=5;
+  if(proxy.risk) score+=Math.min(proxy.risk/100*10,10);
+  score=Math.min(Math.round(score),100);
+  let cls,label;
+  if(score<=10){cls='tg-safe';label='安全 SAFE'}
+  else if(score<=30){cls='tg-low';label='低風險 LOW'}
+  else if(score<=60){cls='tg-med';label='中風險 MEDIUM'}
+  else{cls='tg-high';label='高風險 HIGH'}
+  const summary=[];
+  summary.push(`DNSBL: ${listedCount}/${dnsbl.total} 黑名單命中`);
+  if(proxy.vpn) summary.push('VPN 偵測到');
+  if(proxy.proxy) summary.push('Proxy 偵測到');
+  if(proxy.tor) summary.push('Tor 出口節點');
+  if(proxy.hosting) summary.push('資料中心 IP');
+  if(!listedCount&&!proxy.vpn&&!proxy.proxy&&!proxy.tor) summary.push('未發現明顯威脅指標');
+  $('threat-score').innerHTML=`<div class="threat-gauge ${cls}">${score}</div><div class="threat-summary"><h4 style="color:${score<=10?'var(--grn)':score<=30?'var(--wrn)':score<=60?'#ff9100':'var(--red)'}">${label}</h4><p>${summary.join(' · ')}</p><p style="margin-top:6px;font-size:.64rem;color:var(--muted)">IP: ${esc(ip)} — 分數基於 DNSBL 黑名單 + VPN/Proxy/Tor 偵測結果</p></div>`;
+  log('threatlog',`威脅評分: ${score}/100 (${label})`,'ok');
+  log('threatlog','分析完成 ✓','ok');
+}
+
+function _renderThreatLinks(ip){
+  const encodedIP=encodeURIComponent(ip);
+  $('threat-links').innerHTML=[
+    {name:'Cisco Talos',url:`https://talosintelligence.com/reputation_center/lookup?search=${encodedIP}`,icon:'&#128300;'},
+    {name:'VirusTotal',url:`https://www.virustotal.com/gui/ip-address/${encodedIP}`,icon:'&#128737;'},
+    {name:'AbuseIPDB',url:`https://www.abuseipdb.com/check/${encodedIP}`,icon:'&#128680;'},
+    {name:'Shodan',url:`https://www.shodan.io/host/${encodedIP}`,icon:'&#128270;'},
+    {name:'GreyNoise',url:`https://viz.greynoise.io/ip/${encodedIP}`,icon:'&#128225;'},
+    {name:'IPVoid',url:`https://www.ipvoid.com/ip-blacklist-check/?ip=${encodedIP}`,icon:'&#128203;'},
+  ].map(l=>`<a class="tl-btn" href="${l.url}" target="_blank" rel="noopener">${l.icon} ${l.name}</a>`).join('');
+}
+
+// ═══ TRACE SCRIPT DOWNLOAD / COPY ═══
+function _getTraceTarget(){
+  const v=$('q').value.trim();
+  if(!v){$('q').focus();return null;}
+  return v.replace(/^https?:\/\//,'').replace(/\/.*$/,'').trim();
+}
+function _detectOS(){
+  const ua=navigator.userAgent||navigator.platform||'';
+  if(/Win/i.test(ua)) return 'win';
+  if(/Mac/i.test(ua)) return 'mac';
+  return 'linux';
+}
+function downloadTraceScript(){
+  const t=_getTraceTarget();if(!t)return;
+  const os=_detectOS();
+  let filename,content,mime='text/plain';
+  if(os==='win'){
+    filename=`traceroute-${t}.bat`;
+    content=`@echo off\r\nchcp 65001 >nul\r\necho ════════════════════════════════════════\r\necho   NOAH-IP Traceroute: ${t}\r\necho ════════════════════════════════════════\r\necho.\r\ntracert ${t}\r\necho.\r\necho ════════════════════════════════════════\r\necho   Trace complete. Press any key to close.\r\necho ════════════════════════════════════════\r\npause >nul\r\n`;
+  }else if(os==='mac'){
+    filename=`traceroute-${t}.command`;
+    content=`#!/bin/bash\necho "════════════════════════════════════════"\necho "  NOAH-IP Traceroute: ${t}"\necho "════════════════════════════════════════"\necho ""\ntraceroute ${t}\necho ""\necho "════════════════════════════════════════"\necho "  Trace complete. Press Enter to close."\necho "════════════════════════════════════════"\nread\n`;
+  }else{
+    filename=`traceroute-${t}.sh`;
+    content=`#!/bin/bash\necho "════════════════════════════════════════"\necho "  NOAH-IP Traceroute: ${t}"\necho "════════════════════════════════════════"\necho ""\ntraceroute ${t}\necho ""\necho "════════════════════════════════════════"\necho "  Trace complete. Press Enter to close."\necho "════════════════════════════════════════"\nread\n`;
+  }
+  const blob=new Blob([content],{type:mime});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  log('trlog',`已下載 ${filename} — ${os==='win'?'雙擊 .bat 執行':os==='mac'?'雙擊 .command 執行 (首次需右鍵→開啟)':'chmod +x 後執行'}`,'ok');
+  // Show tip
+  $('r-trace').classList.add('vis');
+  if(os==='mac') log('trlog','macOS 提示: 首次執行 .command 檔案需右鍵→開啟，或先執行 chmod +x '+filename,'warn');
+  if(os==='linux') log('trlog','Linux 提示: 先執行 chmod +x '+filename+' 再 ./'+filename,'warn');
+}
+function copyTraceCmd(){
+  const t=_getTraceTarget();if(!t)return;
+  const os=_detectOS();
+  const cmd=os==='win'?`tracert ${t}`:`traceroute ${t}`;
+  navigator.clipboard.writeText(cmd).then(()=>{
+    $('r-trace').classList.add('vis');
+    log('trlog',`已複製命令: ${cmd} — 打開終端機貼上執行`,'ok');
+  }).catch(()=>{
+    prompt('複製以下命令到終端機執行:',cmd);
+  });
 }
 
 // ═══ 4) AS PATH ═══
@@ -859,5 +1409,6 @@ async function doDNStrace(domain){
 // AdSense
 try{(adsbygoogle=window.adsbygoogle||[]).push({});(adsbygoogle=window.adsbygoogle||[]).push({});(adsbygoogle=window.adsbygoogle||[]).push({})}catch(e){}
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"75124c326cb447fe934cde04713ae013","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
